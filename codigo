@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rastreador de Entregas</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --bg: #f3f4f6;
+            --card: #ffffff;
+            --text: #1f2937;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 { margin-bottom: 20px; font-size: 1.5rem; }
+
+        .container {
+            width: 100%;
+            max-width: 400px;
+        }
+
+        /* Formulário */
+        .input-group {
+            background: var(--card);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+
+        button#addBtn {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button#addBtn:active { opacity: 0.9; }
+
+        /* Lista */
+        ul { list-style: none; padding: 0; margin: 0; }
+
+        li {
+            background: var(--card);
+            margin-bottom: 10px;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .item-info { display: flex; flex-direction: column; }
+        .item-name { font-weight: bold; font-size: 1.1rem; }
+        .item-date { color: #666; font-size: 0.9rem; margin-top: 4px; }
+
+        .actions { display: flex; gap: 10px; }
+
+        .btn-icon {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 5px;
+        }
+        
+        /* Botão de Agenda */
+        .btn-cal { color: #2563eb; }
+        /* Botão de Excluir */
+        .btn-del { color: #dc2626; }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>📦 Minhas Entregas</h1>
+        
+        <div class="input-group">
+            <input type="text" id="itemName" placeholder="O que vai chegar? (ex: Placa de Vídeo)">
+            <input type="date" id="itemDate">
+            <button id="addBtn" onclick="addItem()">Adicionar Entrega</button>
+        </div>
+
+        <ul id="listaEntregas">
+            </ul>
+    </div>
+
+    <script>
+        // Carregar itens salvos ao abrir
+        document.addEventListener('DOMContentLoaded', loadItems);
+
+        function addItem() {
+            const name = document.getElementById('itemName').value;
+            const date = document.getElementById('itemDate').value;
+
+            if (!name || !date) {
+                alert("Por favor, preencha o nome e a data.");
+                return;
+            }
+
+            const entrega = {
+                id: Date.now(),
+                name: name,
+                date: date
+            };
+
+            // Salvar no LocalStorage (memória do celular)
+            let items = JSON.parse(localStorage.getItem('entregas')) || [];
+            items.push(entrega);
+            items.sort((a, b) => new Date(a.date) - new Date(b.date)); // Ordenar por data
+            localStorage.setItem('entregas', JSON.stringify(items));
+
+            document.getElementById('itemName').value = '';
+            document.getElementById('itemDate').value = '';
+            
+            renderList();
+        }
+
+        function renderList() {
+            const list = document.getElementById('listaEntregas');
+            list.innerHTML = '';
+            const items = JSON.parse(localStorage.getItem('entregas')) || [];
+
+            items.forEach(item => {
+                const li = document.createElement('li');
+                
+                // Formatar data para PT-BR visualmente
+                const dataFormatada = new Date(item.date + 'T00:00').toLocaleDateString('pt-BR');
+
+                li.innerHTML = `
+                    <div class="item-info">
+                        <span class="item-name">${item.name}</span>
+                        <span class="item-date">Chega dia: ${dataFormatada}</span>
+                    </div>
+                    <div class="actions">
+                        <button class="btn-icon btn-cal" onclick="addToCalendar('${item.name}', '${item.date}')" title="Agendar Alerta">📅</button>
+                        <button class="btn-icon btn-del" onclick="deleteItem(${item.id})" title="Excluir">🗑️</button>
+                    </div>
+                `;
+                list.appendChild(li);
+            });
+        }
+
+        function deleteItem(id) {
+            let items = JSON.parse(localStorage.getItem('entregas')) || [];
+            items = items.filter(item => item.id !== id);
+            localStorage.setItem('entregas', JSON.stringify(items));
+            renderList();
+        }
+
+        function loadItems() {
+            renderList();
+        }
+
+        // Função Mágica: Cria o link para o Google Agenda
+        function addToCalendar(name, dateStr) {
+            // Data da entrega
+            const dataEntrega = new Date(dateStr + 'T00:00:00');
+            
+            // Formatando para o Google Calendar (YYYYMMDD)
+            const ano = dataEntrega.getFullYear();
+            const mes = String(dataEntrega.getMonth() + 1).padStart(2, '0');
+            const dia = String(dataEntrega.getDate()).padStart(2, '0');
+            const dataString = `${ano}${mes}${dia}`;
+
+            // Título e Detalhes
+            const titulo = encodeURIComponent(`Entrega: ${name}`);
+            const detalhes = encodeURIComponent(`Lembrete criado pelo App de Entregas. O item ${name} chega amanhã!`);
+
+            // Link oficial do Google Agenda
+            // O link abre a criação de evento para o dia da entrega.
+            // O usuário deve apenas confirmar e o Google Agenda notificará conforme a configuração padrão (geralmente 1 dia antes ou 30 min antes).
+            const link = `https://www.google.com/calendar/render?action=TEMPLATE&text=${titulo}&dates=${dataString}/${dataString}&details=${detalhes}`;
+
+            // Abrir em nova aba
+            window.open(link, '_blank');
+        }
+    </script>
+</body>
+</html>
