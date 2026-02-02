@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rastreador de Entregas</title>
+    <title>Controle de Envios</title>
     <style>
         :root {
             --primary: #2563eb;
+            --secondary: #10b981; /* Verde para email */
             --bg: #f3f4f6;
             --card: #ffffff;
             --text: #1f2937;
@@ -23,11 +24,11 @@
             align-items: center;
         }
 
-        h1 { margin-bottom: 20px; font-size: 1.5rem; }
+        h1 { margin-bottom: 20px; font-size: 1.5rem; text-align: center; }
 
         .container {
             width: 100%;
-            max-width: 400px;
+            max-width: 450px;
         }
 
         /* Formulário */
@@ -39,10 +40,18 @@
             margin-bottom: 20px;
         }
 
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #4b5563;
+        }
+
         input {
             width: 100%;
             padding: 12px;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
             border: 1px solid #ddd;
             border-radius: 8px;
             box-sizing: border-box;
@@ -59,6 +68,7 @@
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
+            transition: background 0.2s;
         }
 
         button#addBtn:active { opacity: 0.9; }
@@ -73,96 +83,147 @@
             border-radius: 10px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
             display: flex;
+            flex-direction: column; /* Mudado para coluna para caber os botões */
+            gap: 10px;
+        }
+
+        .item-header {
+            display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: flex-start;
         }
 
         .item-info { display: flex; flex-direction: column; }
         .item-name { font-weight: bold; font-size: 1.1rem; }
-        .item-date { color: #666; font-size: 0.9rem; margin-top: 4px; }
+        .item-date { color: #dc2626; font-weight: 500; font-size: 0.95rem; margin-top: 4px; }
+        .item-emails { color: #666; font-size: 0.8rem; margin-top: 2px; word-break: break-all; }
 
-        .actions { display: flex; gap: 10px; }
+        .actions { 
+            display: flex; 
+            gap: 10px; 
+            margin-top: 5px;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+        }
 
-        .btn-icon {
-            background: none;
+        .btn-action {
+            flex: 1;
+            padding: 8px;
             border: none;
+            border-radius: 6px;
             cursor: pointer;
-            font-size: 1.2rem;
-            padding: 5px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            font-weight: 600;
         }
         
-        /* Botão de Agenda */
-        .btn-cal { color: #2563eb; }
-        /* Botão de Excluir */
-        .btn-del { color: #dc2626; }
+        .btn-cal { background: #eff6ff; color: var(--primary); }
+        .btn-mail { background: #ecfdf5; color: var(--secondary); }
+        .btn-del { background: #fef2f2; color: #dc2626; max-width: 50px;}
 
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h1>📦 Minhas Entregas</h1>
+        <h1>🚚 Controle de Envios</h1>
         
         <div class="input-group">
-            <input type="text" id="itemName" placeholder="O que vai chegar? (ex: Placa de Vídeo)">
+            <label for="itemName">Item</label>
+            <input type="text" id="itemName" placeholder="Ex: Pedido #1234">
+            
+            <label for="itemDate">Data de Envio</label>
             <input type="date" id="itemDate">
-            <button id="addBtn" onclick="addItem()">Adicionar Entrega</button>
+
+            <label for="itemEmails">E-mails para notificar (separe por vírgula)</label>
+            <input type="text" id="itemEmails" placeholder="chefe@empresa.com, cliente@gmail.com">
+
+            <button id="addBtn" onclick="addItem()">Agendar Envio</button>
         </div>
 
-        <ul id="listaEntregas">
+        <ul id="listaEnvios">
             </ul>
     </div>
 
     <script>
-        // Carregar itens salvos ao abrir
         document.addEventListener('DOMContentLoaded', loadItems);
 
         function addItem() {
             const name = document.getElementById('itemName').value;
             const date = document.getElementById('itemDate').value;
+            const emails = document.getElementById('itemEmails').value;
 
             if (!name || !date) {
-                alert("Por favor, preencha o nome e a data.");
+                alert("Por favor, preencha o nome do item e a data de envio.");
                 return;
             }
 
-            const entrega = {
+            const envio = {
                 id: Date.now(),
                 name: name,
-                date: date
+                date: date,
+                emails: emails
             };
 
-            // Salvar no LocalStorage (memória do celular)
-            let items = JSON.parse(localStorage.getItem('entregas')) || [];
-            items.push(entrega);
-            items.sort((a, b) => new Date(a.date) - new Date(b.date)); // Ordenar por data
-            localStorage.setItem('entregas', JSON.stringify(items));
+            let items = JSON.parse(localStorage.getItem('envios')) || [];
+            items.push(envio);
+            items.sort((a, b) => new Date(a.date) - new Date(b.date));
+            localStorage.setItem('envios', JSON.stringify(items));
 
+            // Limpar campos
             document.getElementById('itemName').value = '';
             document.getElementById('itemDate').value = '';
+            document.getElementById('itemEmails').value = '';
             
             renderList();
         }
 
         function renderList() {
-            const list = document.getElementById('listaEntregas');
+            const list = document.getElementById('listaEnvios');
             list.innerHTML = '';
-            const items = JSON.parse(localStorage.getItem('entregas')) || [];
+            const items = JSON.parse(localStorage.getItem('envios')) || [];
+
+            if (items.length === 0) {
+                list.innerHTML = '<p style="text-align:center; color:#999">Nenhum envio agendado.</p>';
+                return;
+            }
 
             items.forEach(item => {
                 const li = document.createElement('li');
                 
-                // Formatar data para PT-BR visualmente
-                const dataFormatada = new Date(item.date + 'T00:00').toLocaleDateString('pt-BR');
+                // Formatar data: separa ano, mês e dia para evitar problemas de fuso horário
+                const parts = item.date.split('-');
+                const dataObj = new Date(parts[0], parts[1] - 1, parts[2]); 
+                const dataFormatada = dataObj.toLocaleDateString('pt-BR');
+
+                // Prepara lista de emails para exibição
+                const emailDisplay = item.emails ? `✉️ ${item.emails}` : 'Nenhum e-mail cadastrado';
+
+                // Escapa aspas para não quebrar o HTML
+                const safeName = item.name.replace(/"/g, '&quot;');
+                const safeEmails = item.emails ? item.emails.replace(/"/g, '&quot;') : '';
 
                 li.innerHTML = `
-                    <div class="item-info">
-                        <span class="item-name">${item.name}</span>
-                        <span class="item-date">Chega dia: ${dataFormatada}</span>
+                    <div class="item-header">
+                        <div class="item-info">
+                            <span class="item-name">${safeName}</span>
+                            <span class="item-date">Data de Envio: ${dataFormatada}</span>
+                            <span class="item-emails">${emailDisplay}</span>
+                        </div>
                     </div>
                     <div class="actions">
-                        <button class="btn-icon btn-cal" onclick="addToCalendar('${item.name}', '${item.date}')" title="Agendar Alerta">📅</button>
-                        <button class="btn-icon btn-del" onclick="deleteItem(${item.id})" title="Excluir">🗑️</button>
+                        <button class="btn-action btn-cal" onclick="addToCalendar('${safeName}', '${item.date}', '${safeEmails}')">
+                            📅 Agenda
+                        </button>
+                        <button class="btn-action btn-mail" onclick="sendEmail('${safeName}', '${item.date}', '${safeEmails}')">
+                            📧 E-mail
+                        </button>
+                        <button class="btn-action btn-del" onclick="deleteItem(${item.id})">
+                            🗑️
+                        </button>
                     </div>
                 `;
                 list.appendChild(li);
@@ -170,9 +231,10 @@
         }
 
         function deleteItem(id) {
-            let items = JSON.parse(localStorage.getItem('entregas')) || [];
+            if(!confirm("Tem certeza que deseja excluir?")) return;
+            let items = JSON.parse(localStorage.getItem('envios')) || [];
             items = items.filter(item => item.id !== id);
-            localStorage.setItem('entregas', JSON.stringify(items));
+            localStorage.setItem('envios', JSON.stringify(items));
             renderList();
         }
 
@@ -180,28 +242,40 @@
             renderList();
         }
 
-        // Função Mágica: Cria o link para o Google Agenda
-        function addToCalendar(name, dateStr) {
-            // Data da entrega
-            const dataEntrega = new Date(dateStr + 'T00:00:00');
+        // --- FUNÇÃO 1: Google Agenda ---
+        function addToCalendar(name, dateStr, emails) {
+            // Cria data para o evento
+            const parts = dateStr.split('-');
+            // Google Calendar formato: YYYYMMDD
+            const dataString = parts[0] + parts[1] + parts[2];
+
+            const titulo = encodeURIComponent(`Envio: ${name}`);
+            const detalhes = encodeURIComponent(`Lembrete de envio do item: ${name}.\nE-mails notificados: ${emails}`);
             
-            // Formatando para o Google Calendar (YYYYMMDD)
-            const ano = dataEntrega.getFullYear();
-            const mes = String(dataEntrega.getMonth() + 1).padStart(2, '0');
-            const dia = String(dataEntrega.getDate()).padStart(2, '0');
-            const dataString = `${ano}${mes}${dia}`;
+            // Tenta adicionar os convidados (nem sempre funciona dependendo da conta, mas é o parâmetro padrão)
+            const addEmails = emails ? `&add=${encodeURIComponent(emails)}` : '';
 
-            // Título e Detalhes
-            const titulo = encodeURIComponent(`Entrega: ${name}`);
-            const detalhes = encodeURIComponent(`Lembrete criado pelo App de Entregas. O item ${name} chega amanhã!`);
-
-            // Link oficial do Google Agenda
-            // O link abre a criação de evento para o dia da entrega.
-            // O usuário deve apenas confirmar e o Google Agenda notificará conforme a configuração padrão (geralmente 1 dia antes ou 30 min antes).
-            const link = `https://www.google.com/calendar/render?action=TEMPLATE&text=${titulo}&dates=${dataString}/${dataString}&details=${detalhes}`;
-
-            // Abrir em nova aba
+            const link = `https://www.google.com/calendar/render?action=TEMPLATE&text=${titulo}&dates=${dataString}/${dataString}&details=${detalhes}${addEmails}`;
             window.open(link, '_blank');
+        }
+
+        // --- FUNÇÃO 2: Enviar E-mail Direto ---
+        function sendEmail(name, dateStr, emails) {
+            if (!emails) {
+                alert("Nenhum e-mail foi cadastrado para este item.");
+                return;
+            }
+
+            const parts = dateStr.split('-');
+            const dataFormatada = `${parts[2]}/${parts[1]}/${parts[0]}`;
+
+            const assunto = encodeURIComponent(`Alerta de Envio: ${name}`);
+            const corpo = encodeURIComponent(`Olá,\n\nEste é um aviso automático de que o item "${name}" está programado para envio na data: ${dataFormatada}.\n\nAtenciosamente,\nControle de Envios.`);
+
+            // Cria link mailto:destinatarios?subject=...&body=...
+            const link = `mailto:${emails}?subject=${assunto}&body=${corpo}`;
+            
+            window.location.href = link;
         }
     </script>
 </body>
