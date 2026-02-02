@@ -4,10 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Controle de Envios</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
             --primary: #2563eb;
-            --secondary: #10b981; /* Verde para email */
+            --secondary: #10b981;
             --bg: #f3f4f6;
             --card: #ffffff;
             --text: #1f2937;
@@ -19,6 +20,7 @@
             color: var(--text);
             margin: 0;
             padding: 20px;
+            padding-bottom: 60px; /* Espaço para o rodapé não cobrir conteúdo */
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -83,14 +85,9 @@
             border-radius: 10px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
             display: flex;
-            flex-direction: column; /* Mudado para coluna para caber os botões */
+            flex-direction: column;
             gap: 10px;
-        }
-
-        .item-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
+            position: relative;
         }
 
         .item-info { display: flex; flex-direction: column; }
@@ -124,6 +121,35 @@
         .btn-mail { background: #ecfdf5; color: var(--secondary); }
         .btn-del { background: #fef2f2; color: #dc2626; max-width: 50px;}
 
+        /* Rodapé Fixo no Canto Direito */
+        .footer-credits {
+            position: fixed;
+            bottom: 15px;
+            right: 15px;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 8px 12px;
+            border-radius: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            backdrop-filter: blur(5px);
+            border: 1px solid #eee;
+            z-index: 1000;
+        }
+
+        .footer-credits a {
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .footer-credits i { font-size: 1.1rem; }
+
     </style>
 </head>
 <body>
@@ -138,18 +164,30 @@
             <label for="itemDate">Data de Envio</label>
             <input type="date" id="itemDate">
 
-            <label for="itemEmails">E-mails para notificar (separe por vírgula)</label>
-            <input type="text" id="itemEmails" placeholder="chefe@empresa.com, cliente@gmail.com">
+            <label for="itemEmails">E-mail para notificar</label>
+            <input type="email" id="itemEmails" list="emailHistoryList" placeholder="cliente@email.com" multiple>
+            
+            <datalist id="emailHistoryList"></datalist>
 
-            <button id="addBtn" onclick="addItem()">Agendar Envio</button>
+            <button id="addBtn" onclick="addItem()">Agendar e Notificar</button>
         </div>
 
         <ul id="listaEnvios">
             </ul>
     </div>
 
+    <div class="footer-credits">
+        <span>Desenvolvido por</span>
+        <a href="https://github.com/SEU-USUARIO" target="_blank">
+            <i class="fab fa-github"></i> GitHub
+        </a>
+    </div>
+
     <script>
-        document.addEventListener('DOMContentLoaded', loadItems);
+        document.addEventListener('DOMContentLoaded', () => {
+            loadItems();
+            loadEmailHistory(); // Carregar emails salvos
+        });
 
         function addItem() {
             const name = document.getElementById('itemName').value;
@@ -168,17 +206,64 @@
                 emails: emails
             };
 
+            // 1. Salvar o Item
             let items = JSON.parse(localStorage.getItem('envios')) || [];
             items.push(envio);
             items.sort((a, b) => new Date(a.date) - new Date(b.date));
             localStorage.setItem('envios', JSON.stringify(items));
 
-            // Limpar campos
+            // 2. Salvar o E-mail no Histórico
+            if (emails) {
+                saveEmailToHistory(emails);
+            }
+
+            // 3. Limpar campos
             document.getElementById('itemName').value = '';
             document.getElementById('itemDate').value = '';
             document.getElementById('itemEmails').value = '';
             
+            // 4. Atualizar lista na tela
             renderList();
+
+            // 5. Disparar E-mail Automaticamente (Simulado)
+            if (emails) {
+                // Pequeno atraso para garantir que a UI atualize antes de abrir o email
+                setTimeout(() => {
+                    sendEmail(name, date, emails);
+                }, 300);
+            } else {
+                alert("Item salvo! (Nenhum e-mail foi enviado pois o campo estava vazio)");
+            }
+        }
+
+        // --- Gerenciamento de Histórico de E-mails ---
+        function saveEmailToHistory(emailString) {
+            let history = JSON.parse(localStorage.getItem('emailHistory')) || [];
+            
+            // Separa por vírgula caso o usuário tenha colado vários, e remove espaços
+            const newEmails = emailString.split(',').map(e => e.trim()).filter(e => e !== "");
+
+            // Adiciona apenas se não existir ainda
+            newEmails.forEach(email => {
+                if (!history.includes(email)) {
+                    history.push(email);
+                }
+            });
+
+            localStorage.setItem('emailHistory', JSON.stringify(history));
+            loadEmailHistory(); // Atualiza a lista de sugestões
+        }
+
+        function loadEmailHistory() {
+            const history = JSON.parse(localStorage.getItem('emailHistory')) || [];
+            const datalist = document.getElementById('emailHistoryList');
+            datalist.innerHTML = ''; // Limpa atual
+
+            history.forEach(email => {
+                const option = document.createElement('option');
+                option.value = email;
+                datalist.appendChild(option);
+            });
         }
 
         function renderList() {
@@ -186,40 +271,29 @@
             list.innerHTML = '';
             const items = JSON.parse(localStorage.getItem('envios')) || [];
 
-            if (items.length === 0) {
-                list.innerHTML = '<p style="text-align:center; color:#999">Nenhum envio agendado.</p>';
-                return;
-            }
-
             items.forEach(item => {
                 const li = document.createElement('li');
                 
-                // Formatar data: separa ano, mês e dia para evitar problemas de fuso horário
                 const parts = item.date.split('-');
                 const dataObj = new Date(parts[0], parts[1] - 1, parts[2]); 
                 const dataFormatada = dataObj.toLocaleDateString('pt-BR');
-
-                // Prepara lista de emails para exibição
-                const emailDisplay = item.emails ? `✉️ ${item.emails}` : 'Nenhum e-mail cadastrado';
-
-                // Escapa aspas para não quebrar o HTML
+                
+                const emailDisplay = item.emails ? `✉️ ${item.emails}` : 'Sem e-mail';
                 const safeName = item.name.replace(/"/g, '&quot;');
                 const safeEmails = item.emails ? item.emails.replace(/"/g, '&quot;') : '';
 
                 li.innerHTML = `
-                    <div class="item-header">
-                        <div class="item-info">
-                            <span class="item-name">${safeName}</span>
-                            <span class="item-date">Data de Envio: ${dataFormatada}</span>
-                            <span class="item-emails">${emailDisplay}</span>
-                        </div>
+                    <div class="item-info">
+                        <span class="item-name">${safeName}</span>
+                        <span class="item-date">Data de Envio: ${dataFormatada}</span>
+                        <span class="item-emails">${emailDisplay}</span>
                     </div>
                     <div class="actions">
                         <button class="btn-action btn-cal" onclick="addToCalendar('${safeName}', '${item.date}', '${safeEmails}')">
                             📅 Agenda
                         </button>
                         <button class="btn-action btn-mail" onclick="sendEmail('${safeName}', '${item.date}', '${safeEmails}')">
-                            📧 E-mail
+                            📧 Reenviar
                         </button>
                         <button class="btn-action btn-del" onclick="deleteItem(${item.id})">
                             🗑️
@@ -238,43 +312,26 @@
             renderList();
         }
 
-        function loadItems() {
-            renderList();
-        }
+        function loadItems() { renderList(); }
 
-        // --- FUNÇÃO 1: Google Agenda ---
         function addToCalendar(name, dateStr, emails) {
-            // Cria data para o evento
             const parts = dateStr.split('-');
-            // Google Calendar formato: YYYYMMDD
             const dataString = parts[0] + parts[1] + parts[2];
-
             const titulo = encodeURIComponent(`Envio: ${name}`);
             const detalhes = encodeURIComponent(`Lembrete de envio do item: ${name}.\nE-mails notificados: ${emails}`);
-            
-            // Tenta adicionar os convidados (nem sempre funciona dependendo da conta, mas é o parâmetro padrão)
             const addEmails = emails ? `&add=${encodeURIComponent(emails)}` : '';
-
             const link = `https://www.google.com/calendar/render?action=TEMPLATE&text=${titulo}&dates=${dataString}/${dataString}&details=${detalhes}${addEmails}`;
             window.open(link, '_blank');
         }
 
-        // --- FUNÇÃO 2: Enviar E-mail Direto ---
         function sendEmail(name, dateStr, emails) {
-            if (!emails) {
-                alert("Nenhum e-mail foi cadastrado para este item.");
-                return;
-            }
-
             const parts = dateStr.split('-');
             const dataFormatada = `${parts[2]}/${parts[1]}/${parts[0]}`;
-
             const assunto = encodeURIComponent(`Alerta de Envio: ${name}`);
             const corpo = encodeURIComponent(`Olá,\n\nEste é um aviso automático de que o item "${name}" está programado para envio na data: ${dataFormatada}.\n\nAtenciosamente,\nControle de Envios.`);
-
-            // Cria link mailto:destinatarios?subject=...&body=...
             const link = `mailto:${emails}?subject=${assunto}&body=${corpo}`;
             
+            // Abre o cliente de email
             window.location.href = link;
         }
     </script>
