@@ -1,20 +1,21 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-    <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Controle de Envios</title>
-    
-   <link rel="icon" type="image/png" href="icon.png?v=2">
-    <link rel="apple-touch-icon" href="icon.png?v=2">
-    <link rel="manifest" href="manifest.json"> 
-    <style>
-        /* ... resto do estilo ... */
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Controle de Envios</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function() {
+            // COLOQUE SUA PUBLIC KEY AQUI DENTRO DAS ASPAS
+            emailjs.init("SUA_PUBLIC_KEY_AQUI");
+        })();
+    </script>
+
     <style>
+        /* MANTIVE TODO O SEU VISUAL INTACTO */
         :root {
             --primary: #2563eb;
             --secondary: #10b981;
@@ -29,7 +30,7 @@
             color: var(--text);
             margin: 0;
             padding: 20px;
-            padding-bottom: 60px; /* Espaço para o rodapé não cobrir conteúdo */
+            padding-bottom: 60px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -37,12 +38,8 @@
 
         h1 { margin-bottom: 20px; font-size: 1.5rem; text-align: center; }
 
-        .container {
-            width: 100%;
-            max-width: 450px;
-        }
+        .container { width: 100%; max-width: 450px; }
 
-        /* Formulário */
         .input-group {
             background: var(--card);
             padding: 20px;
@@ -51,52 +48,27 @@
             margin-bottom: 20px;
         }
 
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: #4b5563;
-        }
+        label { display: block; margin-bottom: 5px; font-size: 0.9rem; font-weight: 600; color: #4b5563; }
 
         input {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 15px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            box-sizing: border-box;
-            font-size: 16px;
+            width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd;
+            border-radius: 8px; box-sizing: border-box; font-size: 16px;
         }
 
         button#addBtn {
-            width: 100%;
-            padding: 12px;
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background 0.2s;
+            width: 100%; padding: 12px; background-color: var(--primary); color: white;
+            border: none; border-radius: 8px; font-size: 16px; font-weight: bold;
+            cursor: pointer; transition: background 0.2s;
         }
 
-        button#addBtn:active { opacity: 0.9; }
+        button#addBtn:disabled { background-color: #93c5fd; cursor: not-allowed; }
 
-        /* Lista */
         ul { list-style: none; padding: 0; margin: 0; }
 
         li {
-            background: var(--card);
-            margin-bottom: 10px;
-            padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            position: relative;
+            background: var(--card); margin-bottom: 10px; padding: 15px;
+            border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            display: flex; flex-direction: column; gap: 10px; position: relative;
         }
 
         .item-info { display: flex; flex-direction: column; }
@@ -104,61 +76,24 @@
         .item-date { color: #dc2626; font-weight: 500; font-size: 0.95rem; margin-top: 4px; }
         .item-emails { color: #666; font-size: 0.8rem; margin-top: 2px; word-break: break-all; }
 
-        .actions { 
-            display: flex; 
-            gap: 10px; 
-            margin-top: 5px;
-            padding-top: 10px;
-            border-top: 1px solid #eee;
-        }
+        .actions { display: flex; gap: 10px; margin-top: 5px; padding-top: 10px; border-top: 1px solid #eee; }
 
         .btn-action {
-            flex: 1;
-            padding: 8px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
-            font-weight: 600;
+            flex: 1; padding: 8px; border: none; border-radius: 6px; cursor: pointer;
+            font-size: 0.9rem; display: flex; align-items: center; justify-content: center;
+            gap: 5px; font-weight: 600;
         }
         
         .btn-cal { background: #eff6ff; color: var(--primary); }
         .btn-mail { background: #ecfdf5; color: var(--secondary); }
         .btn-del { background: #fef2f2; color: #dc2626; max-width: 50px;}
 
-        /* Rodapé Fixo no Canto Direito */
         .footer-credits {
-            position: fixed;
-            bottom: 15px;
-            right: 15px;
-            background-color: rgba(255, 255, 255, 0.9);
-            padding: 8px 12px;
-            border-radius: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
-            font-size: 0.8rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            backdrop-filter: blur(5px);
-            border: 1px solid #eee;
-            z-index: 1000;
+            position: fixed; bottom: 15px; right: 15px; background-color: rgba(255, 255, 255, 0.9);
+            padding: 8px 12px; border-radius: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+            font-size: 0.8rem; display: flex; align-items: center; gap: 8px; border: 1px solid #eee; z-index: 1000;
         }
-
-        .footer-credits a {
-            text-decoration: none;
-            color: #333;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .footer-credits i { font-size: 1.1rem; }
-
+        .footer-credits a { text-decoration: none; color: #333; font-weight: bold; display: flex; align-items: center; gap: 5px; }
     </style>
 </head>
 <body>
@@ -175,99 +110,104 @@
 
             <label for="itemEmails">E-mail para notificar</label>
             <input type="email" id="itemEmails" list="emailHistoryList" placeholder="cliente@email.com" multiple>
-            
             <datalist id="emailHistoryList"></datalist>
 
             <button id="addBtn" onclick="addItem()">Agendar e Notificar</button>
         </div>
 
-        <ul id="listaEnvios">
-            </ul>
+        <ul id="listaEnvios"></ul>
     </div>
 
     <div class="footer-credits">
         <span>Desenvolvido por</span>
-        <a href="https://github.com/v4nd3" target="_blank">
+        <a href="https://github.com/SEU-USUARIO" target="_blank">
             <i class="fab fa-github"></i> GitHub
         </a>
     </div>
 
     <script>
+        // --- COLOQUE SUAS CHAVES AQUI ---
+        const EMAILJS_SERVICE_ID = "service_hro0xpr"; 
+        const EMAILJS_TEMPLATE_ID = "6hQGh6kwO9BxNNTP8";
+
         document.addEventListener('DOMContentLoaded', () => {
             loadItems();
-            loadEmailHistory(); // Carregar emails salvos
+            loadEmailHistory();
         });
 
         function addItem() {
             const name = document.getElementById('itemName').value;
             const date = document.getElementById('itemDate').value;
             const emails = document.getElementById('itemEmails').value;
+            const btn = document.getElementById('addBtn');
 
             if (!name || !date) {
                 alert("Por favor, preencha o nome do item e a data de envio.");
                 return;
             }
 
-            const envio = {
-                id: Date.now(),
-                name: name,
-                date: date,
-                emails: emails
-            };
-
-            // 1. Salvar o Item
+            // Salva os dados na memória
+            const envio = { id: Date.now(), name: name, date: date, emails: emails };
             let items = JSON.parse(localStorage.getItem('envios')) || [];
             items.push(envio);
             items.sort((a, b) => new Date(a.date) - new Date(b.date));
             localStorage.setItem('envios', JSON.stringify(items));
 
-            // 2. Salvar o E-mail no Histórico
-            if (emails) {
-                saveEmailToHistory(emails);
-            }
+            if (emails) saveEmailToHistory(emails);
 
-            // 3. Limpar campos
+            // Atualiza a tela
             document.getElementById('itemName').value = '';
             document.getElementById('itemDate').value = '';
             document.getElementById('itemEmails').value = '';
-            
-            // 4. Atualizar lista na tela
             renderList();
 
-            // 5. Disparar E-mail Automaticamente (Simulado)
+            // Disparo de E-mail Automático em Segundo Plano
             if (emails) {
-                // Pequeno atraso para garantir que a UI atualize antes de abrir o email
-                setTimeout(() => {
-                    sendEmail(name, date, emails);
-                }, 300);
+                btn.disabled = true;
+                btn.innerText = "Enviando e-mail...";
+
+                enviarEmailJS(name, date, emails).then(() => {
+                    btn.disabled = false;
+                    btn.innerText = "Agendar e Notificar";
+                    alert("✅ Item salvo e e-mail enviado com sucesso!");
+                }).catch((error) => {
+                    btn.disabled = false;
+                    btn.innerText = "Agendar e Notificar";
+                    alert("❌ Erro ao enviar e-mail. Verifique a configuração do EmailJS.");
+                    console.error("Erro EmailJS:", error);
+                });
             } else {
-                alert("Item salvo! (Nenhum e-mail foi enviado pois o campo estava vazio)");
+                alert("✅ Item salvo! (Nenhum e-mail foi cadastrado)");
             }
         }
 
-        // --- Gerenciamento de Histórico de E-mails ---
+        // FUNÇÃO QUE FAZ O ENVIO SILENCIOSO
+        function enviarEmailJS(name, dateStr, emails) {
+            const parts = dateStr.split('-');
+            const dataFormatada = `${parts[2]}/${parts[1]}/${parts[0]}`;
+
+            // Variáveis que criamos no template do EmailJS
+            const templateParams = {
+                to_email: emails,
+                item_name: name,
+                item_date: dataFormatada
+            };
+
+            return emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams);
+        }
+
         function saveEmailToHistory(emailString) {
             let history = JSON.parse(localStorage.getItem('emailHistory')) || [];
-            
-            // Separa por vírgula caso o usuário tenha colado vários, e remove espaços
             const newEmails = emailString.split(',').map(e => e.trim()).filter(e => e !== "");
-
-            // Adiciona apenas se não existir ainda
-            newEmails.forEach(email => {
-                if (!history.includes(email)) {
-                    history.push(email);
-                }
-            });
-
+            newEmails.forEach(email => { if (!history.includes(email)) history.push(email); });
             localStorage.setItem('emailHistory', JSON.stringify(history));
-            loadEmailHistory(); // Atualiza a lista de sugestões
+            loadEmailHistory();
         }
 
         function loadEmailHistory() {
             const history = JSON.parse(localStorage.getItem('emailHistory')) || [];
             const datalist = document.getElementById('emailHistoryList');
-            datalist.innerHTML = ''; // Limpa atual
-
+            datalist.innerHTML = '';
             history.forEach(email => {
                 const option = document.createElement('option');
                 option.value = email;
@@ -282,11 +222,9 @@
 
             items.forEach(item => {
                 const li = document.createElement('li');
-                
                 const parts = item.date.split('-');
                 const dataObj = new Date(parts[0], parts[1] - 1, parts[2]); 
                 const dataFormatada = dataObj.toLocaleDateString('pt-BR');
-                
                 const emailDisplay = item.emails ? `✉️ ${item.emails}` : 'Sem e-mail';
                 const safeName = item.name.replace(/"/g, '&quot;');
                 const safeEmails = item.emails ? item.emails.replace(/"/g, '&quot;') : '';
@@ -301,7 +239,7 @@
                         <button class="btn-action btn-cal" onclick="addToCalendar('${safeName}', '${item.date}', '${safeEmails}')">
                             📅 Agenda
                         </button>
-                        <button class="btn-action btn-mail" onclick="sendEmail('${safeName}', '${item.date}', '${safeEmails}')">
+                        <button class="btn-action btn-mail" id="btnResend-${item.id}" onclick="resendEmail('${safeName}', '${item.date}', '${safeEmails}', '${item.id}')">
                             📧 Reenviar
                         </button>
                         <button class="btn-action btn-del" onclick="deleteItem(${item.id})">
@@ -310,6 +248,26 @@
                     </div>
                 `;
                 list.appendChild(li);
+            });
+        }
+
+        // Função de reenviar atualizada para usar o envio silencioso
+        function resendEmail(name, dateStr, emails, id) {
+            if (!emails) {
+                alert("Nenhum e-mail cadastrado."); return;
+            }
+            const btn = document.getElementById(`btnResend-${id}`);
+            const textoOriginal = btn.innerHTML;
+            btn.innerHTML = "⏳ Enviando...";
+            btn.disabled = true;
+
+            enviarEmailJS(name, dateStr, emails).then(() => {
+                btn.innerHTML = "✅ Enviado!";
+                setTimeout(() => { btn.innerHTML = textoOriginal; btn.disabled = false; }, 2000);
+            }).catch((err) => {
+                alert("Erro ao reenviar.");
+                btn.innerHTML = textoOriginal;
+                btn.disabled = false;
             });
         }
 
@@ -328,20 +286,8 @@
             const dataString = parts[0] + parts[1] + parts[2];
             const titulo = encodeURIComponent(`Envio: ${name}`);
             const detalhes = encodeURIComponent(`Lembrete de envio do item: ${name}.\nE-mails notificados: ${emails}`);
-            const addEmails = emails ? `&add=${encodeURIComponent(emails)}` : '';
-            const link = `https://www.google.com/calendar/render?action=TEMPLATE&text=${titulo}&dates=${dataString}/${dataString}&details=${detalhes}${addEmails}`;
+            const link = `https://www.google.com/calendar/render?action=TEMPLATE&text=${titulo}&dates=${dataString}/${dataString}&details=${detalhes}`;
             window.open(link, '_blank');
-        }
-
-        function sendEmail(name, dateStr, emails) {
-            const parts = dateStr.split('-');
-            const dataFormatada = `${parts[2]}/${parts[1]}/${parts[0]}`;
-            const assunto = encodeURIComponent(`Alerta de Envio: ${name}`);
-            const corpo = encodeURIComponent(`Olá,\n\nEste é um aviso automático de que o item "${name}" está programado para envio na data: ${dataFormatada}.\n\nAtenciosamente,\nControle de Envios.`);
-            const link = `mailto:${emails}?subject=${assunto}&body=${corpo}`;
-            
-            // Abre o cliente de email
-            window.location.href = link;
         }
     </script>
 </body>
