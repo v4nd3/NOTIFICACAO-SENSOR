@@ -9,19 +9,19 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script type="text/javascript">
         (function() {
-            // COLOQUE SUA PUBLIC KEY AQUI DENTRO DAS ASPAS
+            // Sua Public Key
             emailjs.init("6hQGh6kwO9BxNNTP8");
         })();
     </script>
 
     <style>
-        /* MANTIVE TODO O SEU VISUAL INTACTO */
         :root {
             --primary: #2563eb;
             --secondary: #10b981;
             --bg: #f3f4f6;
             --card: #ffffff;
             --text: #1f2937;
+            --border: #e5e7eb;
         }
 
         body {
@@ -37,10 +37,9 @@
         }
 
         h1 { margin-bottom: 20px; font-size: 1.5rem; text-align: center; }
-
         .container { width: 100%; max-width: 450px; }
 
-        .input-group {
+        .input-group, .contact-group {
             background: var(--card);
             padding: 20px;
             border-radius: 12px;
@@ -50,21 +49,41 @@
 
         label { display: block; margin-bottom: 5px; font-size: 0.9rem; font-weight: 600; color: #4b5563; }
 
-        input {
+        input[type="text"], input[type="date"], input[type="email"] {
             width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd;
             border-radius: 8px; box-sizing: border-box; font-size: 16px;
         }
 
-        button#addBtn {
+        button.btn-main {
             width: 100%; padding: 12px; background-color: var(--primary); color: white;
             border: none; border-radius: 8px; font-size: 16px; font-weight: bold;
             cursor: pointer; transition: background 0.2s;
         }
+        button.btn-main:disabled { background-color: #93c5fd; cursor: not-allowed; }
 
-        button#addBtn:disabled { background-color: #93c5fd; cursor: not-allowed; }
+        /* Estilos do Cadastro de Contatos */
+        .contact-box {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px;
+            max-height: 150px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+            background: #f9fafb;
+        }
+        .contact-item {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 5px 0; border-bottom: 1px solid #eee;
+        }
+        .contact-item:last-child { border-bottom: none; }
+        .contact-item label { margin: 0; font-weight: 400; cursor: pointer; display: flex; align-items: center; gap: 8px;}
+        .btn-del-contact { background: none; border: none; color: #dc2626; cursor: pointer; padding: 5px;}
+        
+        .add-contact-row { display: flex; gap: 10px; margin-bottom: 15px; }
+        .add-contact-row input { margin-bottom: 0; }
+        .btn-add-contact { background: var(--secondary); color: white; border: none; border-radius: 8px; padding: 0 15px; font-weight: bold; cursor: pointer;}
 
         ul { list-style: none; padding: 0; margin: 0; }
-
         li {
             background: var(--card); margin-bottom: 10px; padding: 15px;
             border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);
@@ -74,16 +93,18 @@
         .item-info { display: flex; flex-direction: column; }
         .item-name { font-weight: bold; font-size: 1.1rem; }
         .item-date { color: #dc2626; font-weight: 500; font-size: 0.95rem; margin-top: 4px; }
-        .item-emails { color: #666; font-size: 0.8rem; margin-top: 2px; word-break: break-all; }
+        .item-emails { color: #666; font-size: 0.8rem; margin-top: 4px; word-break: break-all; }
+        
+        /* Badges de status de notificação */
+        .status-badges { display: flex; gap: 5px; margin-top: 5px; }
+        .badge { font-size: 0.7rem; padding: 3px 6px; border-radius: 4px; background: #eee; color: #666; }
+        .badge.sent { background: #d1fae5; color: #065f46; }
 
         .actions { display: flex; gap: 10px; margin-top: 5px; padding-top: 10px; border-top: 1px solid #eee; }
-
         .btn-action {
             flex: 1; padding: 8px; border: none; border-radius: 6px; cursor: pointer;
-            font-size: 0.9rem; display: flex; align-items: center; justify-content: center;
-            gap: 5px; font-weight: 600;
+            font-size: 0.9rem; display: flex; align-items: center; justify-content: center; gap: 5px; font-weight: 600;
         }
-        
         .btn-cal { background: #eff6ff; color: var(--primary); }
         .btn-mail { background: #ecfdf5; color: var(--secondary); }
         .btn-del { background: #fef2f2; color: #dc2626; max-width: 50px;}
@@ -102,17 +123,23 @@
         <h1>🚚 Controle de Envios</h1>
         
         <div class="input-group">
-            <label for="itemName">Item</label>
+            <label for="itemName">Item / Descrição do Envio</label>
             <input type="text" id="itemName" placeholder="Ex: Pedido #1234">
             
             <label for="itemDate">Data de Envio</label>
             <input type="date" id="itemDate">
 
-            <label for="itemEmails">E-mail para notificar</label>
-            <input type="email" id="itemEmails" list="emailHistoryList" placeholder="cliente@email.com" multiple>
-            <datalist id="emailHistoryList"></datalist>
+            <label>E-mails Destinatários (Marque para enviar)</label>
+            <div class="contact-box" id="contactCheckboxList">
+                </div>
 
-            <button id="addBtn" onclick="addItem()">Agendar e Notificar</button>
+            <label>Cadastrar Novo E-mail na Agenda:</label>
+            <div class="add-contact-row">
+                <input type="email" id="newContactEmail" placeholder="novo@email.com">
+                <button type="button" class="btn-add-contact" onclick="addNewContact()">Salvar</button>
+            </div>
+
+            <button id="addBtn" class="btn-main" onclick="addItem()">Agendar e Notificar Agora</button>
         </div>
 
         <ul id="listaEnvios"></ul>
@@ -126,94 +153,200 @@
     </div>
 
     <script>
-        // --- COLOQUE SUAS CHAVES AQUI ---
+        // --- SUAS CHAVES DO EMAILJS ---
         const EMAILJS_SERVICE_ID = "service_hro0xpr"; 
         const EMAILJS_TEMPLATE_ID = "template_j8aodrq";
+
         document.addEventListener('DOMContentLoaded', () => {
+            loadContacts();
             loadItems();
-            loadEmailHistory();
+            checkAutomatedAlerts(); // Verifica se tem envios para hoje ou amanhã ao abrir o app
         });
 
-        function addItem() {
-            const name = document.getElementById('itemName').value;
-            const date = document.getElementById('itemDate').value;
-            const emails = document.getElementById('itemEmails').value;
-            const btn = document.getElementById('addBtn');
+        // ==========================================
+        // AGENDA DE CONTATOS (SALVAR E LISTAR EMAILS)
+        // ==========================================
+        function addNewContact() {
+            const emailInput = document.getElementById('newContactEmail');
+            const email = emailInput.value.trim();
+            if(!email || !email.includes('@')) {
+                alert("Digite um e-mail válido para salvar."); return;
+            }
 
-            if (!name || !date) {
-                alert("Por favor, preencha o nome do item e a data de envio.");
+            let contacts = JSON.parse(localStorage.getItem('agendaEmails')) || [];
+            if(!contacts.includes(email)) {
+                contacts.push(email);
+                localStorage.setItem('agendaEmails', JSON.stringify(contacts));
+                emailInput.value = '';
+                loadContacts();
+            } else {
+                alert("Este e-mail já está na sua agenda.");
+            }
+        }
+
+        function deleteContact(emailToDelete) {
+            let contacts = JSON.parse(localStorage.getItem('agendaEmails')) || [];
+            contacts = contacts.filter(email => email !== emailToDelete);
+            localStorage.setItem('agendaEmails', JSON.stringify(contacts));
+            loadContacts();
+        }
+
+        function loadContacts() {
+            const contacts = JSON.parse(localStorage.getItem('agendaEmails')) || [];
+            const box = document.getElementById('contactCheckboxList');
+            box.innerHTML = '';
+
+            if(contacts.length === 0) {
+                box.innerHTML = '<div style="color:#999; font-size:0.8rem; text-align:center;">Nenhum e-mail salvo na agenda.</div>';
                 return;
             }
 
-            // Salva os dados na memória
-            const envio = { id: Date.now(), name: name, date: date, emails: emails };
+            contacts.forEach((email, index) => {
+                const div = document.createElement('div');
+                div.className = 'contact-item';
+                div.innerHTML = `
+                    <label>
+                        <input type="checkbox" class="email-checkbox" value="${email}">
+                        ${email}
+                    </label>
+                    <button type="button" class="btn-del-contact" onclick="deleteContact('${email}')"><i class="fas fa-trash"></i></button>
+                `;
+                box.appendChild(div);
+            });
+        }
+
+        // ==========================================
+        // CADASTRO DE ITEM E ENVIO
+        // ==========================================
+        function addItem() {
+            const name = document.getElementById('itemName').value;
+            const date = document.getElementById('itemDate').value;
+            const btn = document.getElementById('addBtn');
+
+            // Pega todos os emails que o usuário marcou na caixinha
+            const checkboxes = document.querySelectorAll('.email-checkbox:checked');
+            const selectedEmails = Array.from(checkboxes).map(cb => cb.value).join(',');
+
+            if (!name || !date) {
+                alert("Por favor, preencha o nome do item e a data de envio."); return;
+            }
+
+            // Salva os dados na memória (com status de notificação)
+            const envio = { 
+                id: Date.now(), 
+                name: name, 
+                date: date, 
+                emails: selectedEmails,
+                notified_minus_1: false, // Controle: Já avisou 1 dia antes?
+                notified_day: false      // Controle: Já avisou no dia?
+            };
+            
             let items = JSON.parse(localStorage.getItem('envios')) || [];
             items.push(envio);
             items.sort((a, b) => new Date(a.date) - new Date(b.date));
             localStorage.setItem('envios', JSON.stringify(items));
 
-            if (emails) saveEmailToHistory(emails);
-
             // Atualiza a tela
             document.getElementById('itemName').value = '';
             document.getElementById('itemDate').value = '';
-            document.getElementById('itemEmails').value = '';
+            // Desmarca os checkboxes
+            document.querySelectorAll('.email-checkbox').forEach(cb => cb.checked = false);
             renderList();
 
-            // Disparo de E-mail Automático em Segundo Plano
-            if (emails) {
+            // Disparo de E-mail Imediato (Primeiro aviso ao cadastrar)
+            if (selectedEmails) {
                 btn.disabled = true;
-                btn.innerText = "Enviando e-mail...";
+                btn.innerText = "Enviando e-mail(s)...";
 
-                enviarEmailJS(name, date, emails).then(() => {
+                enviarEmailJS(name, date, selectedEmails, "Cadastro Inicial").then(() => {
                     btn.disabled = false;
-                    btn.innerText = "Agendar e Notificar";
-                    alert("✅ Item salvo e e-mail enviado com sucesso!");
+                    btn.innerText = "Agendar e Notificar Agora";
+                    alert("✅ Item salvo e e-mail enviado aos contatos marcados!");
                 }).catch((error) => {
                     btn.disabled = false;
-                    btn.innerText = "Agendar e Notificar";
-                    alert("❌ Erro ao enviar e-mail. Verifique a configuração do EmailJS.");
-                    console.error("Erro EmailJS:", error);
+                    btn.innerText = "Agendar e Notificar Agora";
+                    alert("❌ Erro ao enviar e-mail. Mas o item foi salvo.");
                 });
             } else {
-                alert("✅ Item salvo! (Nenhum e-mail foi cadastrado)");
+                alert("✅ Item salvo! (Nenhum e-mail foi marcado para notificar agora)");
             }
         }
 
-        // FUNÇÃO QUE FAZ O ENVIO SILENCIOSO
-        function enviarEmailJS(name, dateStr, emails) {
+        // ==========================================
+        // RADAR AUTOMÁTICO (VERIFICA HOJE E AMANHÃ)
+        // ==========================================
+        async function checkAutomatedAlerts() {
+            let items = JSON.parse(localStorage.getItem('envios')) || [];
+            let updated = false;
+
+            // Pega data de hoje (zerando as horas para comparar só o dia)
+            const hoje = new Date();
+            hoje.setHours(0,0,0,0);
+
+            for (let i = 0; i < items.length; i++) {
+                let item = items[i];
+                if (!item.emails) continue; // Pula se não tiver e-mail cadastrado
+
+                // Converte a data do item para objeto Date
+                const parts = item.date.split('-');
+                const dataItem = new Date(parts[0], parts[1] - 1, parts[2]);
+                dataItem.setHours(0,0,0,0);
+
+                // Calcula a diferença de dias
+                const diffTime = dataItem - hoje;
+                const diffDias = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                // REGRA 1: 1 Dia Antes
+                if (diffDias === 1 && !item.notified_minus_1) {
+                    if(confirm(`⚠️ AVISO DE VÉSPERA: O item "${item.name}" será enviado AMANHÃ!\n\nDeseja disparar o e-mail lembrete para os contatos agora?`)) {
+                        try {
+                            await enviarEmailJS(item.name, item.date, item.emails, "Aviso de Véspera");
+                            item.notified_minus_1 = true;
+                            updated = true;
+                            alert("✅ Lembrete de véspera enviado!");
+                        } catch(e) { alert("Falha ao enviar."); }
+                    }
+                }
+
+                // REGRA 2: No Dia Exato
+                if (diffDias === 0 && !item.notified_day) {
+                    if(confirm(`🚨 AVISO DE HOJE: O item "${item.name}" deve ser enviado HOJE!\n\nDeseja disparar o e-mail de aviso final para os contatos agora?`)) {
+                        try {
+                            await enviarEmailJS(item.name, item.date, item.emails, "Aviso do Dia");
+                            item.notified_day = true;
+                            updated = true;
+                            alert("✅ Aviso final enviado!");
+                        } catch(e) { alert("Falha ao enviar."); }
+                    }
+                }
+            }
+
+            if (updated) {
+                localStorage.setItem('envios', JSON.stringify(items));
+                renderList();
+            }
+        }
+
+        // ==========================================
+        // FUNÇÃO CENTRAL DE ENVIO EMAILJS
+        // ==========================================
+        function enviarEmailJS(name, dateStr, emails, tipoAviso) {
             const parts = dateStr.split('-');
             const dataFormatada = `${parts[2]}/${parts[1]}/${parts[0]}`;
 
-            // Variáveis que criamos no template do EmailJS
+            // Passa os dados pro EmailJS (emails pode ser "a@a.com, b@b.com" que o EmailJS entende!)
             const templateParams = {
                 to_email: emails,
-                item_name: name,
+                item_name: `${name} (${tipoAviso})`,
                 item_date: dataFormatada
             };
 
             return emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams);
         }
 
-        function saveEmailToHistory(emailString) {
-            let history = JSON.parse(localStorage.getItem('emailHistory')) || [];
-            const newEmails = emailString.split(',').map(e => e.trim()).filter(e => e !== "");
-            newEmails.forEach(email => { if (!history.includes(email)) history.push(email); });
-            localStorage.setItem('emailHistory', JSON.stringify(history));
-            loadEmailHistory();
-        }
-
-        function loadEmailHistory() {
-            const history = JSON.parse(localStorage.getItem('emailHistory')) || [];
-            const datalist = document.getElementById('emailHistoryList');
-            datalist.innerHTML = '';
-            history.forEach(email => {
-                const option = document.createElement('option');
-                option.value = email;
-                datalist.appendChild(option);
-            });
-        }
-
+        // ==========================================
+        // RENDERIZAR LISTA E AÇÕES
+        // ==========================================
         function renderList() {
             const list = document.getElementById('listaEnvios');
             list.innerHTML = '';
@@ -224,15 +357,24 @@
                 const parts = item.date.split('-');
                 const dataObj = new Date(parts[0], parts[1] - 1, parts[2]); 
                 const dataFormatada = dataObj.toLocaleDateString('pt-BR');
-                const emailDisplay = item.emails ? `✉️ ${item.emails}` : 'Sem e-mail';
+                
+                // Exibe os e-mails separados de forma bonita
+                const emailListDisplay = item.emails ? item.emails.split(',').join(', ') : 'Sem e-mail';
                 const safeName = item.name.replace(/"/g, '&quot;');
                 const safeEmails = item.emails ? item.emails.replace(/"/g, '&quot;') : '';
+
+                // Badges de Status
+                const badgeVespera = item.notified_minus_1 ? '<span class="badge sent">Véspera OK</span>' : '<span class="badge">Véspera Pend.</span>';
+                const badgeDia = item.notified_day ? '<span class="badge sent">Dia OK</span>' : '<span class="badge">Dia Pend.</span>';
 
                 li.innerHTML = `
                     <div class="item-info">
                         <span class="item-name">${safeName}</span>
                         <span class="item-date">Data de Envio: ${dataFormatada}</span>
-                        <span class="item-emails">${emailDisplay}</span>
+                        <span class="item-emails">✉️ ${emailListDisplay}</span>
+                        <div class="status-badges">
+                            ${item.emails ? badgeVespera + badgeDia : ''}
+                        </div>
                     </div>
                     <div class="actions">
                         <button class="btn-action btn-cal" onclick="addToCalendar('${safeName}', '${item.date}', '${safeEmails}')">
@@ -250,17 +392,14 @@
             });
         }
 
-        // Função de reenviar atualizada para usar o envio silencioso
         function resendEmail(name, dateStr, emails, id) {
-            if (!emails) {
-                alert("Nenhum e-mail cadastrado."); return;
-            }
+            if (!emails) { alert("Nenhum e-mail cadastrado."); return; }
             const btn = document.getElementById(`btnResend-${id}`);
             const textoOriginal = btn.innerHTML;
             btn.innerHTML = "⏳ Enviando...";
             btn.disabled = true;
 
-            enviarEmailJS(name, dateStr, emails).then(() => {
+            enviarEmailJS(name, dateStr, emails, "Reenvio Manual").then(() => {
                 btn.innerHTML = "✅ Enviado!";
                 setTimeout(() => { btn.innerHTML = textoOriginal; btn.disabled = false; }, 2000);
             }).catch((err) => {
