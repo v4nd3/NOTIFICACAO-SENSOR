@@ -7,16 +7,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-    <script type="text/javascript">
-        (function() {
-            emailjs.init("6hQGh6kwO9BxNNTP8");
-        })();
-    </script>
 
     <style>
         :root {
             --primary: #2563eb;
             --secondary: #10b981;
+            --whatsapp: #25D366;
             --bg: #f3f4f6;
             --card: #ffffff;
             --text: #1f2937;
@@ -25,52 +21,50 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            margin: 0;
-            padding: 20px;
-            padding-bottom: 60px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            background-color: var(--bg); color: var(--text);
+            margin: 0; padding: 20px; padding-bottom: 60px;
+            display: flex; flex-direction: column; align-items: center;
         }
 
         h1 { margin-bottom: 10px; font-size: 1.5rem; text-align: center; }
-        
         .container { width: 100%; max-width: 500px; transition: max-width 0.3s ease; }
-        .container.tv-mode { max-width: 1200px; } /* Expande o tamanho na aba da TV */
+        .container.tv-mode { max-width: 1200px; }
 
-        /* --- ESTILOS DAS ABAS --- */
-        .tabs {
-            display: flex; gap: 10px; margin-bottom: 20px; width: 100%; justify-content: center;
-        }
+        /* --- ABAS --- */
+        .tabs { display: flex; gap: 8px; margin-bottom: 20px; width: 100%; justify-content: center; flex-wrap: wrap;}
         .tab-btn {
-            padding: 12px 24px; border: none; border-radius: 8px; font-size: 1rem; font-weight: bold;
+            padding: 10px 18px; border: none; border-radius: 8px; font-size: 0.95rem; font-weight: bold;
             cursor: pointer; background: #e2e8f0; color: #475569; transition: 0.2s;
             display: flex; align-items: center; gap: 8px;
         }
         .tab-btn:hover { background: #cbd5e1; }
         .tab-btn.active { background: var(--primary); color: white; box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.3); }
 
-        /* --- ESTILOS ABA GESTÃO --- */
-        #viewGestao { width: 100%; }
-        
-        .input-group, .contact-group {
+        /* --- COMUM (INPUTS E CARDS) --- */
+        .box-panel {
             background: var(--card); padding: 20px; border-radius: 12px;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); margin-bottom: 20px;
         }
-
         label { display: block; margin-bottom: 5px; font-size: 0.9rem; font-weight: 600; color: #4b5563; }
-
         input[type="text"], input[type="date"], input[type="email"], input[type="number"], select, textarea {
             width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd;
             border-radius: 8px; box-sizing: border-box; font-size: 15px; font-family: inherit;
         }
-
         textarea { resize: vertical; }
         .row-2 { display: flex; gap: 15px; }
         .row-2 > div { flex: 1; }
 
+        button.btn-main {
+            width: 100%; padding: 12px; background-color: var(--primary); color: white;
+            border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px;
+        }
+        button.btn-main:hover { background-color: #1d4ed8; }
+        button.btn-success { background-color: var(--secondary); }
+        button.btn-success:hover { background-color: #059669; }
+
+        /* --- ABA GESTÃO --- */
+        #viewGestao { width: 100%; }
+        
         .checkbox-container {
             display: flex; align-items: center; gap: 8px; margin-bottom: 15px;
             background: #f8fafc; padding: 10px; border-radius: 8px; border: 1px dashed #cbd5e1;
@@ -78,21 +72,10 @@
         .checkbox-container input { width: auto; margin: 0; cursor: pointer; transform: scale(1.2); }
         .checkbox-container label { margin: 0; cursor: pointer; color: #0f172a; }
 
-        button.btn-main {
-            width: 100%; padding: 12px; background-color: var(--primary); color: white;
-            border: none; border-radius: 8px; font-size: 16px; font-weight: bold;
-            cursor: pointer; transition: background 0.2s; margin-top: 10px;
-        }
-        button.btn-main:disabled { background-color: #93c5fd; cursor: not-allowed; }
-
         .contact-box {
-            border: 1px solid var(--border); border-radius: 8px; padding: 10px;
-            max-height: 150px; overflow-y: auto; margin-bottom: 15px; background: #f9fafb;
+            border: 1px solid var(--border); border-radius: 8px; padding: 10px; max-height: 150px; overflow-y: auto; margin-bottom: 15px; background: #f9fafb;
         }
-        .contact-item {
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 5px 0; border-bottom: 1px solid #eee;
-        }
+        .contact-item { display: flex; align-items: center; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #eee; }
         .contact-item:last-child { border-bottom: none; }
         .contact-item label { margin: 0; font-weight: 400; cursor: pointer; display: flex; align-items: center; gap: 8px;}
         .btn-del-contact { background: none; border: none; color: #dc2626; cursor: pointer; padding: 5px;}
@@ -105,83 +88,51 @@
         li {
             background: var(--card); margin-bottom: 15px; padding: 15px;
             border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            display: flex; flex-direction: column; gap: 10px; position: relative;
-            border-left: 5px solid var(--primary);
+            display: flex; flex-direction: column; gap: 10px; position: relative; border-left: 5px solid var(--primary);
         }
+        
+        /* Destaque para pedidos de HOJE */
+        li.is-today { border-left: 5px solid #ef4444; background-color: #fef2f2; }
+        .badge-today { background: #ef4444; color: white; padding: 3px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; animation: pulse 2s infinite; display: inline-block; margin-bottom: 5px; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
 
         .item-header { display: flex; justify-content: space-between; align-items: flex-start; }
         .item-name { font-weight: bold; font-size: 1.1rem; color: #1e293b; }
         
-        .btn-nf-status {
-            padding: 5px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: bold;
-            border: none; cursor: pointer; transition: 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-        }
+        .btn-nf-status { padding: 5px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; border: none; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
         .nf-pendente { background: #fee2e2; color: #991b1b; border: 1px solid #f87171; }
         .nf-emitida { background: #d1fae5; color: #065f46; border: 1px solid #34d399; }
-        .btn-nf-status:hover { filter: brightness(0.95); }
-
-        .item-date { color: #dc2626; font-weight: 600; font-size: 0.95rem; }
         
-        .item-logistics {
-            background: #f8fafc; border: 1px solid #e2e8f0; padding: 10px;
-            border-radius: 8px; font-size: 0.85rem; color: #475569;
-        }
+        .item-date { color: #dc2626; font-weight: 600; font-size: 0.95rem; }
+        .item-logistics { background: #f8fafc; border: 1px solid #e2e8f0; padding: 10px; border-radius: 8px; font-size: 0.85rem; color: #475569; }
         .item-logistics p { margin: 4px 0; }
-        .item-logistics strong { color: #334155; }
-
         .item-emails { color: #64748b; font-size: 0.8rem; word-break: break-all; }
         
-        .status-badges { display: flex; gap: 5px; margin-top: 5px; }
-        .badge { font-size: 0.7rem; padding: 3px 6px; border-radius: 4px; background: #eee; color: #666; font-weight: bold;}
-        .badge.sent { background: #bfdbfe; color: #1e40af; }
-
-        .actions { display: flex; gap: 10px; margin-top: 5px; padding-top: 10px; border-top: 1px solid #eee; }
-        .btn-action {
-            flex: 1; padding: 8px; border: none; border-radius: 6px; cursor: pointer;
-            font-size: 0.9rem; display: flex; align-items: center; justify-content: center; gap: 5px; font-weight: 600;
-        }
+        .actions { display: flex; gap: 8px; margin-top: 5px; padding-top: 10px; border-top: 1px solid #eee; flex-wrap: wrap;}
+        .btn-action { flex: 1; padding: 8px; border: none; border-radius: 6px; cursor: pointer; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; gap: 5px; font-weight: 600; min-width: 80px;}
         .btn-cal { background: #eff6ff; color: var(--primary); }
         .btn-mail { background: #ecfdf5; color: var(--secondary); }
+        .btn-zap { background: #dcfce7; color: #166534; }
         .btn-del { background: #fef2f2; color: #dc2626; max-width: 50px;}
 
-        /* --- ESTILOS ABA PAINEL TV --- */
+        /* --- ABA PAINEL TV --- */
         #viewTV { display: none; width: 100%; }
-        
-        .tv-header-box {
-            display: flex; justify-content: space-between; align-items: center;
-            background: var(--card); padding: 20px 30px; border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); margin-bottom: 20px;
-        }
+        .tv-header-box { display: flex; justify-content: space-between; align-items: center; background: var(--card); padding: 20px 30px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); margin-bottom: 20px; }
         .tv-header-box h2 { margin: 0; font-size: 2rem; color: #1e293b; display: flex; align-items: center; gap: 15px;}
-        .tv-header-box input[type="week"] {
-            font-size: 1.5rem; padding: 10px; border-radius: 8px; border: 2px solid var(--primary); outline: none;
-        }
-
-        .tv-table-container {
-            background: var(--card); border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); overflow: hidden;
-        }
+        .tv-header-box input[type="week"] { font-size: 1.5rem; padding: 10px; border-radius: 8px; border: 2px solid var(--primary); outline: none; }
+        .tv-table-container { background: var(--card); border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); overflow: hidden; }
         .tv-table { width: 100%; border-collapse: collapse; }
-        .tv-table th, .tv-table td {
-            padding: 18px 20px; text-align: left; border-bottom: 1px solid #e2e8f0; font-size: 1.3rem;
-        }
+        .tv-table th, .tv-table td { padding: 18px 20px; text-align: left; border-bottom: 1px solid #e2e8f0; font-size: 1.3rem; }
         .tv-table th { background: #1e293b; color: white; font-weight: bold; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 1px;}
-        .tv-table tr:last-child td { border-bottom: none; }
         .tv-table tr:nth-child(even) { background-color: #f8fafc; }
-        
         .tv-status-ok { background: #d1fae5; color: #065f46; padding: 5px 12px; border-radius: 8px; font-weight: bold; font-size: 1.1rem; display: inline-block;}
         .tv-status-pend { background: #fee2e2; color: #991b1b; padding: 5px 12px; border-radius: 8px; font-weight: bold; font-size: 1.1rem; display: inline-block;}
         .tv-date-col { font-weight: bold; color: var(--primary); }
 
-        .footer-credits {
-            position: fixed; bottom: 15px; right: 15px; background-color: rgba(255, 255, 255, 0.9);
-            padding: 8px 12px; border-radius: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.15);
-            font-size: 0.8rem; display: flex; align-items: center; gap: 8px; border: 1px solid #eee; z-index: 1000;
-        }
-        .footer-credits a { text-decoration: none; color: #333; font-weight: bold; display: flex; align-items: center; gap: 5px; }
+        /* --- ABA CONFIG --- */
+        #viewConfig { display: none; width: 100%; }
+        .config-info { font-size: 0.9rem; color: #64748b; margin-bottom: 15px; }
 
-        /* Esconde a barra de rolagem mas mantém funcionando para a TV ficar limpa */
-        #viewTV ::-webkit-scrollbar { width: 8px; }
-        #viewTV ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
     </style>
 </head>
 <body>
@@ -191,15 +142,18 @@
         
         <div class="tabs">
             <button class="tab-btn active" id="btnTabGestao" onclick="switchTab('gestao')">
-                <i class="fas fa-edit"></i> Gestão de Envios
+                <i class="fas fa-edit"></i> Gestão
             </button>
             <button class="tab-btn" id="btnTabTV" onclick="switchTab('tv')">
-                <i class="fas fa-tv"></i> Painel TV (Semana)
+                <i class="fas fa-tv"></i> Painel TV
+            </button>
+            <button class="tab-btn" id="btnTabConfig" onclick="switchTab('config')">
+                <i class="fas fa-cog"></i> Configurações
             </button>
         </div>
         
         <div id="viewGestao">
-            <div class="input-group">
+            <div class="box-panel">
                 <label for="itemName">Identificação do Pedido</label>
                 <input type="text" id="itemName" placeholder="Ex: Pedido #1234 - Cliente X">
                 
@@ -237,7 +191,7 @@
                 </div>
 
                 <label for="itemObs">Observações Internas</label>
-                <textarea id="itemObs" rows="2" placeholder="Ex: Material frágil. Aguardar liberação de pagamento."></textarea>
+                <textarea id="itemObs" rows="2" placeholder="Ex: Material frágil."></textarea>
 
                 <label>Setores a Notificar (E-mail)</label>
                 <div class="contact-box" id="contactCheckboxList"></div>
@@ -259,82 +213,119 @@
                 <h2><i class="fas fa-calendar-alt" style="color: var(--primary);"></i> Saídas da Semana</h2>
                 <input type="week" id="tvWeekSelector" onchange="renderTV()">
             </div>
-
             <div class="tv-table-container">
                 <table class="tv-table">
                     <thead>
                         <tr>
-                            <th>Data</th>
-                            <th>Pedido / Cliente</th>
-                            <th>Status NF</th>
-                            <th>Volumes</th>
-                            <th>Via (Transporte)</th>
-                            <th>Obs</th>
+                            <th>Data</th><th>Pedido / Cliente</th><th>Status NF</th><th>Volumes</th><th>Via</th><th>Obs</th>
                         </tr>
                     </thead>
-                    <tbody id="tvTableBody">
-                        </tbody>
+                    <tbody id="tvTableBody"></tbody>
                 </table>
+            </div>
+        </div>
+
+        <div id="viewConfig">
+            <div class="box-panel">
+                <h2><i class="fab fa-whatsapp" style="color: var(--whatsapp);"></i> Integração WhatsApp</h2>
+                <p class="config-info">Digite o número padrão (ex: do grupo da expedição) que receberá os alertas manuais de WhatsApp. Inclua o código do país (55) e DDD.</p>
+                <label for="cfgZap">Número do WhatsApp (Apenas números)</label>
+                <input type="text" id="cfgZap" placeholder="Ex: 5511999999999">
+
+                <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+
+                <h2><i class="fas fa-envelope" style="color: var(--primary);"></i> Chaves do EmailJS</h2>
+                <p class="config-info">Suas credenciais para disparo de e-mails automáticos.</p>
+                
+                <label for="cfgEmailPubKey">Public Key</label>
+                <input type="text" id="cfgEmailPubKey" placeholder="Ex: 6hQGh6kwO9BxNNTP8">
+                
+                <label for="cfgEmailServiceId">Service ID</label>
+                <input type="text" id="cfgEmailServiceId" placeholder="Ex: service_hro0xpr">
+                
+                <label for="cfgEmailTemplateId">Template ID</label>
+                <input type="text" id="cfgEmailTemplateId" placeholder="Ex: template_j8aodrq">
+
+                <button class="btn-main btn-success" onclick="saveConfig()"><i class="fas fa-save"></i> Salvar Configurações</button>
             </div>
         </div>
 
     </div>
 
-    <div class="footer-credits">
-        <span>Desenvolvido por</span>
-        <a href="https://github.com/SEU-USUARIO" target="_blank">
-            <i class="fab fa-github"></i> GitHub
-        </a>
-    </div>
-
     <script>
-        const EMAILJS_SERVICE_ID = "service_hro0xpr"; 
-        const EMAILJS_TEMPLATE_ID = "template_j8aodrq";
+        // Variáveis globais de configuração
+        let CFG_ZAP = '';
+        let CFG_EMAIL_PUB = '6hQGh6kwO9BxNNTP8';
+        let CFG_EMAIL_SRV = 'service_hro0xpr';
+        let CFG_EMAIL_TPL = 'template_j8aodrq';
 
         document.addEventListener('DOMContentLoaded', () => {
+            loadConfig();
             loadContacts();
             loadItems();
-            setTVWeekToCurrent(); // Define a semana atual na TV
+            setTVWeekToCurrent();
             checkAutomatedAlerts();
 
-            // Atualiza automaticamente caso outra aba (no mesmo PC) altere os dados
-            window.addEventListener('storage', () => {
-                loadItems();
-                renderTV();
-            });
+            window.addEventListener('storage', () => { loadItems(); renderTV(); });
         });
 
         // ==========================================
-        // SISTEMA DE ABAS
+        // CONFIGURAÇÕES E INICIALIZAÇÃO
+        // ==========================================
+        function loadConfig() {
+            CFG_ZAP = localStorage.getItem('cfgZap') || '';
+            CFG_EMAIL_PUB = localStorage.getItem('cfgEmailPubKey') || '6hQGh6kwO9BxNNTP8';
+            CFG_EMAIL_SRV = localStorage.getItem('cfgEmailServiceId') || 'service_hro0xpr';
+            CFG_EMAIL_TPL = localStorage.getItem('cfgEmailTemplateId') || 'template_j8aodrq';
+
+            document.getElementById('cfgZap').value = CFG_ZAP;
+            document.getElementById('cfgEmailPubKey').value = CFG_EMAIL_PUB;
+            document.getElementById('cfgEmailServiceId').value = CFG_EMAIL_SRV;
+            document.getElementById('cfgEmailTemplateId').value = CFG_EMAIL_TPL;
+
+            // Inicializa o EmailJS com a chave salva
+            emailjs.init(CFG_EMAIL_PUB);
+        }
+
+        function saveConfig() {
+            localStorage.setItem('cfgZap', document.getElementById('cfgZap').value.replace(/\D/g, '')); // Salva só números
+            localStorage.setItem('cfgEmailPubKey', document.getElementById('cfgEmailPubKey').value.trim());
+            localStorage.setItem('cfgEmailServiceId', document.getElementById('cfgEmailServiceId').value.trim());
+            localStorage.setItem('cfgEmailTemplateId', document.getElementById('cfgEmailTemplateId').value.trim());
+            
+            alert('✅ Configurações salvas com sucesso!');
+            loadConfig(); // Recarrega
+        }
+
+        // ==========================================
+        // ABAS
         // ==========================================
         function switchTab(tabName) {
             const container = document.getElementById('mainContainer');
-            const btnGestao = document.getElementById('btnTabGestao');
-            const btnTV = document.getElementById('btnTabTV');
-            const viewGestao = document.getElementById('viewGestao');
-            const viewTV = document.getElementById('viewTV');
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('viewGestao').style.display = 'none';
+            document.getElementById('viewTV').style.display = 'none';
+            document.getElementById('viewConfig').style.display = 'none';
+            container.classList.remove('tv-mode');
 
             if (tabName === 'gestao') {
-                btnGestao.classList.add('active');
-                btnTV.classList.remove('active');
-                viewGestao.style.display = 'block';
-                viewTV.style.display = 'none';
-                container.classList.remove('tv-mode');
-            } else {
-                btnTV.classList.add('active');
-                btnGestao.classList.remove('active');
-                viewTV.style.display = 'block';
-                viewGestao.style.display = 'none';
-                container.classList.add('tv-mode'); // Expande a tela
-                renderTV(); // Atualiza a tabela ao abrir
+                document.getElementById('btnTabGestao').classList.add('active');
+                document.getElementById('viewGestao').style.display = 'block';
+            } else if (tabName === 'tv') {
+                document.getElementById('btnTabTV').classList.add('active');
+                document.getElementById('viewTV').style.display = 'block';
+                container.classList.add('tv-mode');
+                renderTV();
+            } else if (tabName === 'config') {
+                document.getElementById('btnTabConfig').classList.add('active');
+                document.getElementById('viewConfig').style.display = 'block';
             }
         }
 
         // ==========================================
-        // LÓGICA DA ABA DA TV E SEMANAS
+        // TV LOGIC
         // ==========================================
         function getWeekString(dateObj) {
-            // Converte uma data (Date) para o formato do input week (ex: "2026-W13")
             const d = new Date(Date.UTC(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate()));
             const dayNum = d.getUTCDay() || 7;
             d.setUTCDate(d.getUTCDate() + 4 - dayNum);
@@ -343,132 +334,85 @@
             return d.getUTCFullYear() + '-W' + String(weekNo).padStart(2, '0');
         }
 
-        function setTVWeekToCurrent() {
-            const selector = document.getElementById('tvWeekSelector');
-            selector.value = getWeekString(new Date());
-        }
+        function setTVWeekToCurrent() { document.getElementById('tvWeekSelector').value = getWeekString(new Date()); }
 
         function renderTV() {
-            const tbody = document.getElementById('tvTableBody');
-            tbody.innerHTML = '';
-            const selectedWeek = document.getElementById('tvWeekSelector').value; // Ex: "2026-W13"
-            
+            const tbody = document.getElementById('tvTableBody'); tbody.innerHTML = '';
+            const selectedWeek = document.getElementById('tvWeekSelector').value;
             if (!selectedWeek) return;
 
             const items = JSON.parse(localStorage.getItem('envios')) || [];
-            
-            // Filtra os itens para pegar apenas os que pertencem à semana selecionada
             const tvItems = items.filter(item => {
-                const parts = item.date.split('-');
-                const itemDateObj = new Date(parts[0], parts[1] - 1, parts[2]);
+                const parts = item.date.split('-'); const itemDateObj = new Date(parts[0], parts[1] - 1, parts[2]);
                 return getWeekString(itemDateObj) === selectedWeek;
             });
 
-            if (tvItems.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #64748b; padding: 30px;">Nenhum envio agendado para esta semana.</td></tr>';
-                return;
-            }
+            if (tvItems.length === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #64748b; padding: 30px;">Nenhum envio agendado para esta semana.</td></tr>'; return; }
 
-            // Renderiza as linhas na tabela
             tvItems.forEach(item => {
-                const parts = item.date.split('-');
-                const itemDateObj = new Date(parts[0], parts[1] - 1, parts[2]);
-                // Pega o dia da semana abreviado (Ex: Seg, 30/03)
+                const parts = item.date.split('-'); const itemDateObj = new Date(parts[0], parts[1] - 1, parts[2]);
                 const diaSemana = itemDateObj.toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: '2-digit' }).replace('.', '');
-
-                const statusNF = item.nfEmitida 
-                    ? `<span class="tv-status-ok">✅ Emitida</span>` 
-                    : `<span class="tv-status-pend">⚠️ Pendente</span>`;
+                const statusNF = item.nfEmitida ? `<span class="tv-status-ok">✅ Emitida</span>` : `<span class="tv-status-pend">⚠️ Pendente</span>`;
                 
-                const dispNF = item.nf || '-';
-                const safeName = item.name.replace(/"/g, '&quot;');
-                const dispVolumes = item.volumes ? item.volumes : '-';
-                const dispMetodo = item.metodo ? item.metodo : '-';
-                const dispObs = item.obs ? item.obs : '-';
-
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td class="tv-date-col">${diaSemana.toUpperCase()}</td>
-                    <td style="font-weight: bold; color: #1e293b;">${safeName}</td>
-                    <td>${statusNF} <div style="font-size: 0.8rem; color:#64748b; margin-top:4px;">Nº ${dispNF}</div></td>
-                    <td>${dispVolumes} cx</td>
-                    <td>${dispMetodo}</td>
-                    <td style="font-size: 0.9rem; color: #475569; max-width: 200px;">${dispObs}</td>
+                    <td style="font-weight: bold; color: #1e293b;">${item.name}</td>
+                    <td>${statusNF} <div style="font-size: 0.8rem; color:#64748b; margin-top:4px;">Nº ${item.nf || '-'}</div></td>
+                    <td>${item.volumes || '-'} cx</td>
+                    <td>${item.metodo || '-'}</td>
+                    <td style="font-size: 0.9rem; color: #475569; max-width: 200px;">${item.obs || '-'}</td>
                 `;
                 tbody.appendChild(tr);
             });
         }
 
-
         // ==========================================
-        // AGENDA DE CONTATOS (Mantido intacto)
+        // AGENDA
         // ==========================================
         function addNewContact() {
-            const emailInput = document.getElementById('newContactEmail');
-            const email = emailInput.value.trim();
-            if(!email || !email.includes('@')) { alert("Digite um e-mail válido para salvar."); return; }
-
+            const emailInput = document.getElementById('newContactEmail'); const email = emailInput.value.trim();
+            if(!email || !email.includes('@')) { alert("Digite um e-mail válido."); return; }
             let contacts = JSON.parse(localStorage.getItem('agendaEmails')) || [];
-            if(!contacts.includes(email)) {
-                contacts.push(email);
-                localStorage.setItem('agendaEmails', JSON.stringify(contacts));
-                emailInput.value = '';
-                loadContacts();
-            } else { alert("Este e-mail já está na sua agenda."); }
+            if(!contacts.includes(email)) { contacts.push(email); localStorage.setItem('agendaEmails', JSON.stringify(contacts)); emailInput.value = ''; loadContacts(); } else { alert("E-mail já cadastrado."); }
         }
-
         function deleteContact(emailToDelete) {
             let contacts = JSON.parse(localStorage.getItem('agendaEmails')) || [];
-            contacts = contacts.filter(email => email !== emailToDelete);
-            localStorage.setItem('agendaEmails', JSON.stringify(contacts));
-            loadContacts();
+            contacts = contacts.filter(email => email !== emailToDelete); localStorage.setItem('agendaEmails', JSON.stringify(contacts)); loadContacts();
         }
-
         function loadContacts() {
-            const contacts = JSON.parse(localStorage.getItem('agendaEmails')) || [];
-            const box = document.getElementById('contactCheckboxList');
-            box.innerHTML = '';
-            if(contacts.length === 0) { box.innerHTML = '<div style="color:#999; font-size:0.8rem; text-align:center;">Nenhum e-mail salvo na agenda.</div>'; return; }
-
+            const contacts = JSON.parse(localStorage.getItem('agendaEmails')) || []; const box = document.getElementById('contactCheckboxList'); box.innerHTML = '';
+            if(contacts.length === 0) { box.innerHTML = '<div style="color:#999; font-size:0.8rem; text-align:center;">Agenda vazia.</div>'; return; }
             contacts.forEach((email) => {
-                const div = document.createElement('div');
-                div.className = 'contact-item';
-                div.innerHTML = `
-                    <label><input type="checkbox" class="email-checkbox" value="${email}"> ${email}</label>
-                    <button type="button" class="btn-del-contact" onclick="deleteContact('${email}')"><i class="fas fa-trash"></i></button>
-                `;
+                const div = document.createElement('div'); div.className = 'contact-item';
+                div.innerHTML = `<label><input type="checkbox" class="email-checkbox" value="${email}"> ${email}</label><button type="button" class="btn-del-contact" onclick="deleteContact('${email}')"><i class="fas fa-trash"></i></button>`;
                 box.appendChild(div);
             });
         }
 
         // ==========================================
-        // CADASTRO DE ITEM E ENVIO (Mantido intacto)
+        // CRUD & ALERTS
         // ==========================================
         function addItem() {
-            const name = document.getElementById('itemName').value;
-            const date = document.getElementById('itemDate').value;
-            const nf = document.getElementById('itemNF').value || 'Pendente';
-            const nfEmitida = document.getElementById('itemNFEmitida').checked;
-            const volumes = document.getElementById('itemVolumes').value || '1';
-            const metodo = document.getElementById('itemMetodo').value;
-            const obs = document.getElementById('itemObs').value;
+            const name = document.getElementById('itemName').value; const date = document.getElementById('itemDate').value;
+            if (!name || !date) { alert("Preencha identificação e data."); return; }
             
             const btn = document.getElementById('addBtn');
-
             const checkboxes = document.querySelectorAll('.email-checkbox:checked');
             const selectedEmails = Array.from(checkboxes).map(cb => cb.value).join(',');
 
-            if (!name || !date) { alert("Por favor, preencha a identificação do pedido e a data prevista."); return; }
-
             const envio = { 
-                id: Date.now(), name: name, date: date, nf: nf, nfEmitida: nfEmitida,
-                volumes: volumes, metodo: metodo, obs: obs, emails: selectedEmails,
-                notified_minus_1: false, notified_day: false 
+                id: Date.now(), name: name, date: date, 
+                nf: document.getElementById('itemNF').value || 'Pendente', 
+                nfEmitida: document.getElementById('itemNFEmitida').checked,
+                volumes: document.getElementById('itemVolumes').value || '1', 
+                metodo: document.getElementById('itemMetodo').value, 
+                obs: document.getElementById('itemObs').value, 
+                emails: selectedEmails, notified_minus_1: false, notified_day: false 
             };
             
             let items = JSON.parse(localStorage.getItem('envios')) || [];
-            items.push(envio);
-            items.sort((a, b) => new Date(a.date) - new Date(b.date));
+            items.push(envio); items.sort((a, b) => new Date(a.date) - new Date(b.date));
             localStorage.setItem('envios', JSON.stringify(items));
 
             document.getElementById('itemName').value = ''; document.getElementById('itemDate').value = '';
@@ -476,84 +420,105 @@
             document.getElementById('itemObs').value = ''; document.getElementById('itemNFEmitida').checked = false;
             document.querySelectorAll('.email-checkbox').forEach(cb => cb.checked = false);
             
-            renderList();
-            renderTV(); // Atualiza a TV se estiver aberta no mesmo momento
+            renderList(); renderTV();
 
             if (selectedEmails) {
-                btn.disabled = true; btn.innerText = "Enviando notificação...";
-                enviarEmailJS(envio, "Nova Expedição Agendada").then(() => {
-                    btn.disabled = false; btn.innerText = "Agendar e Notificar"; alert("✅ Pedido agendado e equipe notificada!");
-                }).catch((error) => {
-                    btn.disabled = false; btn.innerText = "Agendar e Notificar"; alert("❌ Erro ao enviar e-mail. Mas o pedido foi agendado.");
-                });
-            } else { alert("✅ Pedido agendado! (Nenhuma notificação disparada)"); }
+                btn.disabled = true; btn.innerText = "Enviando...";
+                enviarEmailJS(envio, "Nova Expedição Agendada").then(() => { btn.disabled = false; btn.innerText = "Agendar e Notificar"; alert("✅ Agendado e notificado!"); }).catch(() => { btn.disabled = false; btn.innerText = "Agendar e Notificar"; alert("❌ Erro no e-mail, mas salvo."); });
+            } else { alert("✅ Salvo sem e-mail."); }
         }
 
         function toggleNFStatus(id) {
             let items = JSON.parse(localStorage.getItem('envios')) || [];
             let index = items.findIndex(item => item.id === id);
-            if (index > -1) {
-                items[index].nfEmitida = !items[index].nfEmitida;
-                localStorage.setItem('envios', JSON.stringify(items));
-                renderList();
-                renderTV(); // Atualiza na TV também
-            }
+            if (index > -1) { items[index].nfEmitida = !items[index].nfEmitida; localStorage.setItem('envios', JSON.stringify(items)); renderList(); renderTV(); }
         }
 
         async function checkAutomatedAlerts() {
             let items = JSON.parse(localStorage.getItem('envios')) || [];
-            let updated = false;
-            const hoje = new Date(); hoje.setHours(0,0,0,0);
+            let updated = false; const hoje = new Date(); hoje.setHours(0,0,0,0);
 
             for (let i = 0; i < items.length; i++) {
-                let item = items[i];
-                if (!item.emails) continue;
-                const parts = item.date.split('-');
-                const dataItem = new Date(parts[0], parts[1] - 1, parts[2]); dataItem.setHours(0,0,0,0);
+                let item = items[i]; if (!item.emails) continue;
+                const parts = item.date.split('-'); const dataItem = new Date(parts[0], parts[1] - 1, parts[2]); dataItem.setHours(0,0,0,0);
                 const diffDias = Math.ceil((dataItem - hoje) / (1000 * 60 * 60 * 24));
 
                 if (diffDias === 1 && !item.notified_minus_1) {
-                    if(confirm(`⚠️ AVISO: A expedição "${item.name}" deve ocorrer AMANHÃ.\nDeseja alertar os setores agora?`)) {
-                        try { await enviarEmailJS(item, "Lembrete: Despacho Amanhã"); item.notified_minus_1 = true; updated = true; alert("✅ Lembrete enviado!"); } catch(e) {}
+                    if(confirm(`⚠️ VÉSPERA: Deseja alertar por e-mail sobre "${item.name}" amanhã?`)) {
+                        try { await enviarEmailJS(item, "Lembrete: Despacho Amanhã"); item.notified_minus_1 = true; updated = true; } catch(e) {}
                     }
                 }
                 if (diffDias === 0 && !item.notified_day) {
-                    if(confirm(`🚨 ATENÇÃO: A expedição "${item.name}" deve ser despachada HOJE.\nDeseja alertar a expedição agora?`)) {
-                        try { await enviarEmailJS(item, "Aviso Final: Despacho Hoje"); item.notified_day = true; updated = true; alert("✅ Aviso final enviado!"); } catch(e) {}
+                    if(confirm(`🚨 HOJE: Deseja alertar por e-mail sobre "${item.name}" hoje?`)) {
+                        try { await enviarEmailJS(item, "Aviso Final: Despacho Hoje"); item.notified_day = true; updated = true; } catch(e) {}
                     }
                 }
             }
-            if (updated) { localStorage.setItem('envios', JSON.stringify(items)); renderList(); renderTV(); }
+            if (updated) { localStorage.setItem('envios', JSON.stringify(items)); renderList(); }
         }
 
         function enviarEmailJS(itemObj, tipoAviso) {
             const parts = itemObj.date.split('-'); const dataFormatada = `${parts[2]}/${parts[1]}/${parts[0]}`;
             const statusNFText = itemObj.nfEmitida ? 'EMITIDA' : 'PENDENTE';
-            const nomeEnriquecido = `${itemObj.name} | [NF: ${itemObj.nf} - ${statusNFText}] | [Via: ${itemObj.metodo}] | [Vol: ${itemObj.volumes}]`;
-            return emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, { to_email: itemObj.emails, item_name: `${nomeEnriquecido} (${tipoAviso})`, item_date: dataFormatada });
+            const nomeEnriquecido = `${itemObj.name} | [NF: ${itemObj.nf} - ${statusNFText}] | [Via: ${itemObj.metodo}]`;
+            return emailjs.send(CFG_EMAIL_SRV, CFG_EMAIL_TPL, { to_email: itemObj.emails, item_name: `${nomeEnriquecido} (${tipoAviso})`, item_date: dataFormatada });
         }
 
+        // ==========================================
+        // DISPARO WHATSAPP MANUAL
+        // ==========================================
+        function sendWhatsApp(id) {
+            let items = JSON.parse(localStorage.getItem('envios')) || [];
+            let item = items.find(i => i.id === id);
+            if(!item) return;
+
+            const telefone = CFG_ZAP;
+            if(!telefone) {
+                alert("Nenhum número configurado! Vá na aba 'Configurações' e adicione o WhatsApp de destino.");
+                switchTab('config');
+                return;
+            }
+
+            const statusNF = item.nfEmitida ? "✅ Emitida" : "⚠️ Pendente";
+            let msg = `🚨 *LEMBRETE DE EXPEDIÇÃO PARA HOJE!* 🚨\n\n`;
+            msg += `📦 *Pedido:* ${item.name}\n`;
+            msg += `📄 *NF:* ${item.nf} (${statusNF})\n`;
+            msg += `📦 *Volumes:* ${item.volumes || '-'} cx\n`;
+            msg += `🚚 *Via:* ${item.metodo || '-'}\n`;
+            if(item.obs) msg += `📝 *Obs:* ${item.obs}\n`;
+            
+            const url = `https://wa.me/${telefone}?text=${encodeURIComponent(msg)}`;
+            window.open(url, '_blank');
+        }
+
+        // ==========================================
+        // RENDERIZAÇÃO DA LISTA GESTÃO
+        // ==========================================
         function renderList() {
             const list = document.getElementById('listaEnvios'); list.innerHTML = '';
             const items = JSON.parse(localStorage.getItem('envios')) || [];
+            const hoje = new Date(); hoje.setHours(0,0,0,0);
 
             items.forEach(item => {
                 const li = document.createElement('li');
-                const parts = item.date.split('-');
-                const dataObj = new Date(parts[0], parts[1] - 1, parts[2]); 
+                const parts = item.date.split('-'); const dataObj = new Date(parts[0], parts[1] - 1, parts[2]); dataObj.setHours(0,0,0,0);
                 const dataFormatada = dataObj.toLocaleDateString('pt-BR');
+                const isToday = (dataObj.getTime() === hoje.getTime()); // Verifica se é hoje
                 
-                const safeName = item.name.replace(/"/g, '&quot;');
+                if(isToday) li.classList.add('is-today');
+
                 const btnNF = item.nfEmitida ? `<button class="btn-nf-status nf-emitida" onclick="toggleNFStatus(${item.id})">✅ NF Emitida</button>` : `<button class="btn-nf-status nf-pendente" onclick="toggleNFStatus(${item.id})">⚠️ NF Pendente</button>`;
                 
                 li.innerHTML = `
-                    <div class="item-header"><span class="item-name">${safeName}</span> ${btnNF}</div>
+                    ${isToday ? `<div class="badge-today">🚨 DESPACHAR HOJE</div>` : ''}
+                    <div class="item-header"><span class="item-name">${item.name}</span> ${btnNF}</div>
                     <span class="item-date">Data Limite: ${dataFormatada}</span>
                     <div class="item-logistics">
                         <p><strong>NF:</strong> ${item.nf || '-'} | <strong>Vol:</strong> ${item.volumes || '-'} cx | <strong>Via:</strong> ${item.metodo || '-'}</p>
                     </div>
                     <div class="actions">
-                        <button class="btn-action btn-del" onclick="deleteItem(${item.id})">🗑️ Excluir</button>
+                        <button class="btn-action btn-zap" onclick="sendWhatsApp(${item.id})"><i class="fab fa-whatsapp"></i> Notificar</button>
+                        <button class="btn-action btn-del" onclick="deleteItem(${item.id})">🗑️</button>
                     </div>
                 `;
                 list.appendChild(li);
@@ -561,10 +526,9 @@
         }
 
         function deleteItem(id) {
-            if(!confirm("Tem certeza que deseja excluir este agendamento?")) return;
+            if(!confirm("Deseja excluir este agendamento?")) return;
             let items = JSON.parse(localStorage.getItem('envios')) || [];
-            items = items.filter(item => item.id !== id);
-            localStorage.setItem('envios', JSON.stringify(items));
+            items = items.filter(item => item.id !== id); localStorage.setItem('envios', JSON.stringify(items));
             renderList(); renderTV();
         }
 
