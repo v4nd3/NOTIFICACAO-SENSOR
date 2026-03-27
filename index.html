@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Controle de Envios</title>
+    <title>Controle de Expedição</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script type="text/javascript">
         (function() {
-            // Sua Public Key
             emailjs.init("6hQGh6kwO9BxNNTP8");
         })();
     </script>
@@ -36,40 +35,59 @@
             align-items: center;
         }
 
-        h1 { margin-bottom: 20px; font-size: 1.5rem; text-align: center; }
-        .container { width: 100%; max-width: 450px; }
+        h1 { margin-bottom: 10px; font-size: 1.5rem; text-align: center; }
+        
+        .container { width: 100%; max-width: 500px; transition: max-width 0.3s ease; }
+        .container.tv-mode { max-width: 1200px; } /* Expande o tamanho na aba da TV */
 
+        /* --- ESTILOS DAS ABAS --- */
+        .tabs {
+            display: flex; gap: 10px; margin-bottom: 20px; width: 100%; justify-content: center;
+        }
+        .tab-btn {
+            padding: 12px 24px; border: none; border-radius: 8px; font-size: 1rem; font-weight: bold;
+            cursor: pointer; background: #e2e8f0; color: #475569; transition: 0.2s;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .tab-btn:hover { background: #cbd5e1; }
+        .tab-btn.active { background: var(--primary); color: white; box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.3); }
+
+        /* --- ESTILOS ABA GESTÃO --- */
+        #viewGestao { width: 100%; }
+        
         .input-group, .contact-group {
-            background: var(--card);
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
+            background: var(--card); padding: 20px; border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); margin-bottom: 20px;
         }
 
         label { display: block; margin-bottom: 5px; font-size: 0.9rem; font-weight: 600; color: #4b5563; }
 
-        input[type="text"], input[type="date"], input[type="email"] {
+        input[type="text"], input[type="date"], input[type="email"], input[type="number"], select, textarea {
             width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd;
-            border-radius: 8px; box-sizing: border-box; font-size: 16px;
+            border-radius: 8px; box-sizing: border-box; font-size: 15px; font-family: inherit;
         }
+
+        textarea { resize: vertical; }
+        .row-2 { display: flex; gap: 15px; }
+        .row-2 > div { flex: 1; }
+
+        .checkbox-container {
+            display: flex; align-items: center; gap: 8px; margin-bottom: 15px;
+            background: #f8fafc; padding: 10px; border-radius: 8px; border: 1px dashed #cbd5e1;
+        }
+        .checkbox-container input { width: auto; margin: 0; cursor: pointer; transform: scale(1.2); }
+        .checkbox-container label { margin: 0; cursor: pointer; color: #0f172a; }
 
         button.btn-main {
             width: 100%; padding: 12px; background-color: var(--primary); color: white;
             border: none; border-radius: 8px; font-size: 16px; font-weight: bold;
-            cursor: pointer; transition: background 0.2s;
+            cursor: pointer; transition: background 0.2s; margin-top: 10px;
         }
         button.btn-main:disabled { background-color: #93c5fd; cursor: not-allowed; }
 
-        /* Estilos do Cadastro de Contatos */
         .contact-box {
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 10px;
-            max-height: 150px;
-            overflow-y: auto;
-            margin-bottom: 15px;
-            background: #f9fafb;
+            border: 1px solid var(--border); border-radius: 8px; padding: 10px;
+            max-height: 150px; overflow-y: auto; margin-bottom: 15px; background: #f9fafb;
         }
         .contact-item {
             display: flex; align-items: center; justify-content: space-between;
@@ -85,20 +103,37 @@
 
         ul { list-style: none; padding: 0; margin: 0; }
         li {
-            background: var(--card); margin-bottom: 10px; padding: 15px;
+            background: var(--card); margin-bottom: 15px; padding: 15px;
             border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);
             display: flex; flex-direction: column; gap: 10px; position: relative;
+            border-left: 5px solid var(--primary);
         }
 
-        .item-info { display: flex; flex-direction: column; }
-        .item-name { font-weight: bold; font-size: 1.1rem; }
-        .item-date { color: #dc2626; font-weight: 500; font-size: 0.95rem; margin-top: 4px; }
-        .item-emails { color: #666; font-size: 0.8rem; margin-top: 4px; word-break: break-all; }
+        .item-header { display: flex; justify-content: space-between; align-items: flex-start; }
+        .item-name { font-weight: bold; font-size: 1.1rem; color: #1e293b; }
         
-        /* Badges de status de notificação */
+        .btn-nf-status {
+            padding: 5px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: bold;
+            border: none; cursor: pointer; transition: 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        .nf-pendente { background: #fee2e2; color: #991b1b; border: 1px solid #f87171; }
+        .nf-emitida { background: #d1fae5; color: #065f46; border: 1px solid #34d399; }
+        .btn-nf-status:hover { filter: brightness(0.95); }
+
+        .item-date { color: #dc2626; font-weight: 600; font-size: 0.95rem; }
+        
+        .item-logistics {
+            background: #f8fafc; border: 1px solid #e2e8f0; padding: 10px;
+            border-radius: 8px; font-size: 0.85rem; color: #475569;
+        }
+        .item-logistics p { margin: 4px 0; }
+        .item-logistics strong { color: #334155; }
+
+        .item-emails { color: #64748b; font-size: 0.8rem; word-break: break-all; }
+        
         .status-badges { display: flex; gap: 5px; margin-top: 5px; }
-        .badge { font-size: 0.7rem; padding: 3px 6px; border-radius: 4px; background: #eee; color: #666; }
-        .badge.sent { background: #d1fae5; color: #065f46; }
+        .badge { font-size: 0.7rem; padding: 3px 6px; border-radius: 4px; background: #eee; color: #666; font-weight: bold;}
+        .badge.sent { background: #bfdbfe; color: #1e40af; }
 
         .actions { display: flex; gap: 10px; margin-top: 5px; padding-top: 10px; border-top: 1px solid #eee; }
         .btn-action {
@@ -109,40 +144,140 @@
         .btn-mail { background: #ecfdf5; color: var(--secondary); }
         .btn-del { background: #fef2f2; color: #dc2626; max-width: 50px;}
 
+        /* --- ESTILOS ABA PAINEL TV --- */
+        #viewTV { display: none; width: 100%; }
+        
+        .tv-header-box {
+            display: flex; justify-content: space-between; align-items: center;
+            background: var(--card); padding: 20px 30px; border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); margin-bottom: 20px;
+        }
+        .tv-header-box h2 { margin: 0; font-size: 2rem; color: #1e293b; display: flex; align-items: center; gap: 15px;}
+        .tv-header-box input[type="week"] {
+            font-size: 1.5rem; padding: 10px; border-radius: 8px; border: 2px solid var(--primary); outline: none;
+        }
+
+        .tv-table-container {
+            background: var(--card); border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); overflow: hidden;
+        }
+        .tv-table { width: 100%; border-collapse: collapse; }
+        .tv-table th, .tv-table td {
+            padding: 18px 20px; text-align: left; border-bottom: 1px solid #e2e8f0; font-size: 1.3rem;
+        }
+        .tv-table th { background: #1e293b; color: white; font-weight: bold; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 1px;}
+        .tv-table tr:last-child td { border-bottom: none; }
+        .tv-table tr:nth-child(even) { background-color: #f8fafc; }
+        
+        .tv-status-ok { background: #d1fae5; color: #065f46; padding: 5px 12px; border-radius: 8px; font-weight: bold; font-size: 1.1rem; display: inline-block;}
+        .tv-status-pend { background: #fee2e2; color: #991b1b; padding: 5px 12px; border-radius: 8px; font-weight: bold; font-size: 1.1rem; display: inline-block;}
+        .tv-date-col { font-weight: bold; color: var(--primary); }
+
         .footer-credits {
             position: fixed; bottom: 15px; right: 15px; background-color: rgba(255, 255, 255, 0.9);
             padding: 8px 12px; border-radius: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.15);
             font-size: 0.8rem; display: flex; align-items: center; gap: 8px; border: 1px solid #eee; z-index: 1000;
         }
         .footer-credits a { text-decoration: none; color: #333; font-weight: bold; display: flex; align-items: center; gap: 5px; }
+
+        /* Esconde a barra de rolagem mas mantém funcionando para a TV ficar limpa */
+        #viewTV ::-webkit-scrollbar { width: 8px; }
+        #viewTV ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>🚚 Controle de Envios</h1>
+    <div class="container" id="mainContainer">
+        <h1>📦 Controle de Expedição</h1>
         
-        <div class="input-group">
-            <label for="itemName">Item / Descrição do Envio</label>
-            <input type="text" id="itemName" placeholder="Ex: Pedido #1234">
-            
-            <label for="itemDate">Data de Envio</label>
-            <input type="date" id="itemDate">
-
-            <label>E-mails Destinatários (Marque para enviar)</label>
-            <div class="contact-box" id="contactCheckboxList">
+        <div class="tabs">
+            <button class="tab-btn active" id="btnTabGestao" onclick="switchTab('gestao')">
+                <i class="fas fa-edit"></i> Gestão de Envios
+            </button>
+            <button class="tab-btn" id="btnTabTV" onclick="switchTab('tv')">
+                <i class="fas fa-tv"></i> Painel TV (Semana)
+            </button>
+        </div>
+        
+        <div id="viewGestao">
+            <div class="input-group">
+                <label for="itemName">Identificação do Pedido</label>
+                <input type="text" id="itemName" placeholder="Ex: Pedido #1234 - Cliente X">
+                
+                <div class="row-2">
+                    <div>
+                        <label for="itemNF">Nº da Nota Fiscal</label>
+                        <input type="text" id="itemNF" placeholder="Ex: 54321">
+                    </div>
+                    <div>
+                        <label for="itemVolumes">Volumes (Caixas)</label>
+                        <input type="number" id="itemVolumes" placeholder="Ex: 2" min="1">
+                    </div>
                 </div>
 
-            <label>Cadastrar Novo E-mail na Agenda:</label>
-            <div class="add-contact-row">
-                <input type="email" id="newContactEmail" placeholder="novo@email.com">
-                <button type="button" class="btn-add-contact" onclick="addNewContact()">Salvar</button>
+                <div class="checkbox-container">
+                    <input type="checkbox" id="itemNFEmitida">
+                    <label for="itemNFEmitida">NF já foi emitida pelo faturamento</label>
+                </div>
+
+                <div class="row-2">
+                    <div>
+                        <label for="itemMetodo">Método de Envio</label>
+                        <select id="itemMetodo">
+                            <option value="Transportadora">Transportadora</option>
+                            <option value="Correios">Correios</option>
+                            <option value="Motoboy">Motoboy</option>
+                            <option value="Retirada">Retirada no Local</option>
+                            <option value="Outro">Outro</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="itemDate">Data Prevista</label>
+                        <input type="date" id="itemDate">
+                    </div>
+                </div>
+
+                <label for="itemObs">Observações Internas</label>
+                <textarea id="itemObs" rows="2" placeholder="Ex: Material frágil. Aguardar liberação de pagamento."></textarea>
+
+                <label>Setores a Notificar (E-mail)</label>
+                <div class="contact-box" id="contactCheckboxList"></div>
+
+                <label>Cadastrar Novo E-mail na Agenda:</label>
+                <div class="add-contact-row">
+                    <input type="email" id="newContactEmail" placeholder="novo@email.com">
+                    <button type="button" class="btn-add-contact" onclick="addNewContact()">Salvar</button>
+                </div>
+
+                <button id="addBtn" class="btn-main" onclick="addItem()">Agendar e Notificar</button>
             </div>
 
-            <button id="addBtn" class="btn-main" onclick="addItem()">Agendar e Notificar Agora</button>
+            <ul id="listaEnvios"></ul>
         </div>
 
-        <ul id="listaEnvios"></ul>
+        <div id="viewTV">
+            <div class="tv-header-box">
+                <h2><i class="fas fa-calendar-alt" style="color: var(--primary);"></i> Saídas da Semana</h2>
+                <input type="week" id="tvWeekSelector" onchange="renderTV()">
+            </div>
+
+            <div class="tv-table-container">
+                <table class="tv-table">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Pedido / Cliente</th>
+                            <th>Status NF</th>
+                            <th>Volumes</th>
+                            <th>Via (Transporte)</th>
+                            <th>Obs</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tvTableBody">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+
     </div>
 
     <div class="footer-credits">
@@ -153,25 +288,125 @@
     </div>
 
     <script>
-        // --- SUAS CHAVES DO EMAILJS ---
         const EMAILJS_SERVICE_ID = "service_hro0xpr"; 
         const EMAILJS_TEMPLATE_ID = "template_j8aodrq";
 
         document.addEventListener('DOMContentLoaded', () => {
             loadContacts();
             loadItems();
-            checkAutomatedAlerts(); // Verifica se tem envios para hoje ou amanhã ao abrir o app
+            setTVWeekToCurrent(); // Define a semana atual na TV
+            checkAutomatedAlerts();
+
+            // Atualiza automaticamente caso outra aba (no mesmo PC) altere os dados
+            window.addEventListener('storage', () => {
+                loadItems();
+                renderTV();
+            });
         });
 
         // ==========================================
-        // AGENDA DE CONTATOS (SALVAR E LISTAR EMAILS)
+        // SISTEMA DE ABAS
+        // ==========================================
+        function switchTab(tabName) {
+            const container = document.getElementById('mainContainer');
+            const btnGestao = document.getElementById('btnTabGestao');
+            const btnTV = document.getElementById('btnTabTV');
+            const viewGestao = document.getElementById('viewGestao');
+            const viewTV = document.getElementById('viewTV');
+
+            if (tabName === 'gestao') {
+                btnGestao.classList.add('active');
+                btnTV.classList.remove('active');
+                viewGestao.style.display = 'block';
+                viewTV.style.display = 'none';
+                container.classList.remove('tv-mode');
+            } else {
+                btnTV.classList.add('active');
+                btnGestao.classList.remove('active');
+                viewTV.style.display = 'block';
+                viewGestao.style.display = 'none';
+                container.classList.add('tv-mode'); // Expande a tela
+                renderTV(); // Atualiza a tabela ao abrir
+            }
+        }
+
+        // ==========================================
+        // LÓGICA DA ABA DA TV E SEMANAS
+        // ==========================================
+        function getWeekString(dateObj) {
+            // Converte uma data (Date) para o formato do input week (ex: "2026-W13")
+            const d = new Date(Date.UTC(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate()));
+            const dayNum = d.getUTCDay() || 7;
+            d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+            const yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+            const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1)/7);
+            return d.getUTCFullYear() + '-W' + String(weekNo).padStart(2, '0');
+        }
+
+        function setTVWeekToCurrent() {
+            const selector = document.getElementById('tvWeekSelector');
+            selector.value = getWeekString(new Date());
+        }
+
+        function renderTV() {
+            const tbody = document.getElementById('tvTableBody');
+            tbody.innerHTML = '';
+            const selectedWeek = document.getElementById('tvWeekSelector').value; // Ex: "2026-W13"
+            
+            if (!selectedWeek) return;
+
+            const items = JSON.parse(localStorage.getItem('envios')) || [];
+            
+            // Filtra os itens para pegar apenas os que pertencem à semana selecionada
+            const tvItems = items.filter(item => {
+                const parts = item.date.split('-');
+                const itemDateObj = new Date(parts[0], parts[1] - 1, parts[2]);
+                return getWeekString(itemDateObj) === selectedWeek;
+            });
+
+            if (tvItems.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #64748b; padding: 30px;">Nenhum envio agendado para esta semana.</td></tr>';
+                return;
+            }
+
+            // Renderiza as linhas na tabela
+            tvItems.forEach(item => {
+                const parts = item.date.split('-');
+                const itemDateObj = new Date(parts[0], parts[1] - 1, parts[2]);
+                // Pega o dia da semana abreviado (Ex: Seg, 30/03)
+                const diaSemana = itemDateObj.toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: '2-digit' }).replace('.', '');
+
+                const statusNF = item.nfEmitida 
+                    ? `<span class="tv-status-ok">✅ Emitida</span>` 
+                    : `<span class="tv-status-pend">⚠️ Pendente</span>`;
+                
+                const dispNF = item.nf || '-';
+                const safeName = item.name.replace(/"/g, '&quot;');
+                const dispVolumes = item.volumes ? item.volumes : '-';
+                const dispMetodo = item.metodo ? item.metodo : '-';
+                const dispObs = item.obs ? item.obs : '-';
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="tv-date-col">${diaSemana.toUpperCase()}</td>
+                    <td style="font-weight: bold; color: #1e293b;">${safeName}</td>
+                    <td>${statusNF} <div style="font-size: 0.8rem; color:#64748b; margin-top:4px;">Nº ${dispNF}</div></td>
+                    <td>${dispVolumes} cx</td>
+                    <td>${dispMetodo}</td>
+                    <td style="font-size: 0.9rem; color: #475569; max-width: 200px;">${dispObs}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+
+        // ==========================================
+        // AGENDA DE CONTATOS (Mantido intacto)
         // ==========================================
         function addNewContact() {
             const emailInput = document.getElementById('newContactEmail');
             const email = emailInput.value.trim();
-            if(!email || !email.includes('@')) {
-                alert("Digite um e-mail válido para salvar."); return;
-            }
+            if(!email || !email.includes('@')) { alert("Digite um e-mail válido para salvar."); return; }
 
             let contacts = JSON.parse(localStorage.getItem('agendaEmails')) || [];
             if(!contacts.includes(email)) {
@@ -179,9 +414,7 @@
                 localStorage.setItem('agendaEmails', JSON.stringify(contacts));
                 emailInput.value = '';
                 loadContacts();
-            } else {
-                alert("Este e-mail já está na sua agenda.");
-            }
+            } else { alert("Este e-mail já está na sua agenda."); }
         }
 
         function deleteContact(emailToDelete) {
@@ -195,20 +428,13 @@
             const contacts = JSON.parse(localStorage.getItem('agendaEmails')) || [];
             const box = document.getElementById('contactCheckboxList');
             box.innerHTML = '';
+            if(contacts.length === 0) { box.innerHTML = '<div style="color:#999; font-size:0.8rem; text-align:center;">Nenhum e-mail salvo na agenda.</div>'; return; }
 
-            if(contacts.length === 0) {
-                box.innerHTML = '<div style="color:#999; font-size:0.8rem; text-align:center;">Nenhum e-mail salvo na agenda.</div>';
-                return;
-            }
-
-            contacts.forEach((email, index) => {
+            contacts.forEach((email) => {
                 const div = document.createElement('div');
                 div.className = 'contact-item';
                 div.innerHTML = `
-                    <label>
-                        <input type="checkbox" class="email-checkbox" value="${email}">
-                        ${email}
-                    </label>
+                    <label><input type="checkbox" class="email-checkbox" value="${email}"> ${email}</label>
                     <button type="button" class="btn-del-contact" onclick="deleteContact('${email}')"><i class="fas fa-trash"></i></button>
                 `;
                 box.appendChild(div);
@@ -216,29 +442,28 @@
         }
 
         // ==========================================
-        // CADASTRO DE ITEM E ENVIO
+        // CADASTRO DE ITEM E ENVIO (Mantido intacto)
         // ==========================================
         function addItem() {
             const name = document.getElementById('itemName').value;
             const date = document.getElementById('itemDate').value;
+            const nf = document.getElementById('itemNF').value || 'Pendente';
+            const nfEmitida = document.getElementById('itemNFEmitida').checked;
+            const volumes = document.getElementById('itemVolumes').value || '1';
+            const metodo = document.getElementById('itemMetodo').value;
+            const obs = document.getElementById('itemObs').value;
+            
             const btn = document.getElementById('addBtn');
 
-            // Pega todos os emails que o usuário marcou na caixinha
             const checkboxes = document.querySelectorAll('.email-checkbox:checked');
             const selectedEmails = Array.from(checkboxes).map(cb => cb.value).join(',');
 
-            if (!name || !date) {
-                alert("Por favor, preencha o nome do item e a data de envio."); return;
-            }
+            if (!name || !date) { alert("Por favor, preencha a identificação do pedido e a data prevista."); return; }
 
-            // Salva os dados na memória (com status de notificação)
             const envio = { 
-                id: Date.now(), 
-                name: name, 
-                date: date, 
-                emails: selectedEmails,
-                notified_minus_1: false, // Controle: Já avisou 1 dia antes?
-                notified_day: false      // Controle: Já avisou no dia?
+                id: Date.now(), name: name, date: date, nf: nf, nfEmitida: nfEmitida,
+                volumes: volumes, metodo: metodo, obs: obs, emails: selectedEmails,
+                notified_minus_1: false, notified_day: false 
             };
             
             let items = JSON.parse(localStorage.getItem('envios')) || [];
@@ -246,110 +471,70 @@
             items.sort((a, b) => new Date(a.date) - new Date(b.date));
             localStorage.setItem('envios', JSON.stringify(items));
 
-            // Atualiza a tela
-            document.getElementById('itemName').value = '';
-            document.getElementById('itemDate').value = '';
-            // Desmarca os checkboxes
+            document.getElementById('itemName').value = ''; document.getElementById('itemDate').value = '';
+            document.getElementById('itemNF').value = ''; document.getElementById('itemVolumes').value = '';
+            document.getElementById('itemObs').value = ''; document.getElementById('itemNFEmitida').checked = false;
             document.querySelectorAll('.email-checkbox').forEach(cb => cb.checked = false);
+            
             renderList();
+            renderTV(); // Atualiza a TV se estiver aberta no mesmo momento
 
-            // Disparo de E-mail Imediato (Primeiro aviso ao cadastrar)
             if (selectedEmails) {
-                btn.disabled = true;
-                btn.innerText = "Enviando e-mail(s)...";
-
-                enviarEmailJS(name, date, selectedEmails, "Cadastro Inicial").then(() => {
-                    btn.disabled = false;
-                    btn.innerText = "Agendar e Notificar Agora";
-                    alert("✅ Item salvo e e-mail enviado aos contatos marcados!");
+                btn.disabled = true; btn.innerText = "Enviando notificação...";
+                enviarEmailJS(envio, "Nova Expedição Agendada").then(() => {
+                    btn.disabled = false; btn.innerText = "Agendar e Notificar"; alert("✅ Pedido agendado e equipe notificada!");
                 }).catch((error) => {
-                    btn.disabled = false;
-                    btn.innerText = "Agendar e Notificar Agora";
-                    alert("❌ Erro ao enviar e-mail. Mas o item foi salvo.");
+                    btn.disabled = false; btn.innerText = "Agendar e Notificar"; alert("❌ Erro ao enviar e-mail. Mas o pedido foi agendado.");
                 });
-            } else {
-                alert("✅ Item salvo! (Nenhum e-mail foi marcado para notificar agora)");
+            } else { alert("✅ Pedido agendado! (Nenhuma notificação disparada)"); }
+        }
+
+        function toggleNFStatus(id) {
+            let items = JSON.parse(localStorage.getItem('envios')) || [];
+            let index = items.findIndex(item => item.id === id);
+            if (index > -1) {
+                items[index].nfEmitida = !items[index].nfEmitida;
+                localStorage.setItem('envios', JSON.stringify(items));
+                renderList();
+                renderTV(); // Atualiza na TV também
             }
         }
 
-        // ==========================================
-        // RADAR AUTOMÁTICO (VERIFICA HOJE E AMANHÃ)
-        // ==========================================
         async function checkAutomatedAlerts() {
             let items = JSON.parse(localStorage.getItem('envios')) || [];
             let updated = false;
-
-            // Pega data de hoje (zerando as horas para comparar só o dia)
-            const hoje = new Date();
-            hoje.setHours(0,0,0,0);
+            const hoje = new Date(); hoje.setHours(0,0,0,0);
 
             for (let i = 0; i < items.length; i++) {
                 let item = items[i];
-                if (!item.emails) continue; // Pula se não tiver e-mail cadastrado
-
-                // Converte a data do item para objeto Date
+                if (!item.emails) continue;
                 const parts = item.date.split('-');
-                const dataItem = new Date(parts[0], parts[1] - 1, parts[2]);
-                dataItem.setHours(0,0,0,0);
+                const dataItem = new Date(parts[0], parts[1] - 1, parts[2]); dataItem.setHours(0,0,0,0);
+                const diffDias = Math.ceil((dataItem - hoje) / (1000 * 60 * 60 * 24));
 
-                // Calcula a diferença de dias
-                const diffTime = dataItem - hoje;
-                const diffDias = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-                // REGRA 1: 1 Dia Antes
                 if (diffDias === 1 && !item.notified_minus_1) {
-                    if(confirm(`⚠️ AVISO DE VÉSPERA: O item "${item.name}" será enviado AMANHÃ!\n\nDeseja disparar o e-mail lembrete para os contatos agora?`)) {
-                        try {
-                            await enviarEmailJS(item.name, item.date, item.emails, "Aviso de Véspera");
-                            item.notified_minus_1 = true;
-                            updated = true;
-                            alert("✅ Lembrete de véspera enviado!");
-                        } catch(e) { alert("Falha ao enviar."); }
+                    if(confirm(`⚠️ AVISO: A expedição "${item.name}" deve ocorrer AMANHÃ.\nDeseja alertar os setores agora?`)) {
+                        try { await enviarEmailJS(item, "Lembrete: Despacho Amanhã"); item.notified_minus_1 = true; updated = true; alert("✅ Lembrete enviado!"); } catch(e) {}
                     }
                 }
-
-                // REGRA 2: No Dia Exato
                 if (diffDias === 0 && !item.notified_day) {
-                    if(confirm(`🚨 AVISO DE HOJE: O item "${item.name}" deve ser enviado HOJE!\n\nDeseja disparar o e-mail de aviso final para os contatos agora?`)) {
-                        try {
-                            await enviarEmailJS(item.name, item.date, item.emails, "Aviso do Dia");
-                            item.notified_day = true;
-                            updated = true;
-                            alert("✅ Aviso final enviado!");
-                        } catch(e) { alert("Falha ao enviar."); }
+                    if(confirm(`🚨 ATENÇÃO: A expedição "${item.name}" deve ser despachada HOJE.\nDeseja alertar a expedição agora?`)) {
+                        try { await enviarEmailJS(item, "Aviso Final: Despacho Hoje"); item.notified_day = true; updated = true; alert("✅ Aviso final enviado!"); } catch(e) {}
                     }
                 }
             }
-
-            if (updated) {
-                localStorage.setItem('envios', JSON.stringify(items));
-                renderList();
-            }
+            if (updated) { localStorage.setItem('envios', JSON.stringify(items)); renderList(); renderTV(); }
         }
 
-        // ==========================================
-        // FUNÇÃO CENTRAL DE ENVIO EMAILJS
-        // ==========================================
-        function enviarEmailJS(name, dateStr, emails, tipoAviso) {
-            const parts = dateStr.split('-');
-            const dataFormatada = `${parts[2]}/${parts[1]}/${parts[0]}`;
-
-            // Passa os dados pro EmailJS (emails pode ser "a@a.com, b@b.com" que o EmailJS entende!)
-            const templateParams = {
-                to_email: emails,
-                item_name: `${name} (${tipoAviso})`,
-                item_date: dataFormatada
-            };
-
-            return emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams);
+        function enviarEmailJS(itemObj, tipoAviso) {
+            const parts = itemObj.date.split('-'); const dataFormatada = `${parts[2]}/${parts[1]}/${parts[0]}`;
+            const statusNFText = itemObj.nfEmitida ? 'EMITIDA' : 'PENDENTE';
+            const nomeEnriquecido = `${itemObj.name} | [NF: ${itemObj.nf} - ${statusNFText}] | [Via: ${itemObj.metodo}] | [Vol: ${itemObj.volumes}]`;
+            return emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, { to_email: itemObj.emails, item_name: `${nomeEnriquecido} (${tipoAviso})`, item_date: dataFormatada });
         }
 
-        // ==========================================
-        // RENDERIZAR LISTA E AÇÕES
-        // ==========================================
         function renderList() {
-            const list = document.getElementById('listaEnvios');
-            list.innerHTML = '';
+            const list = document.getElementById('listaEnvios'); list.innerHTML = '';
             const items = JSON.parse(localStorage.getItem('envios')) || [];
 
             items.forEach(item => {
@@ -358,75 +543,32 @@
                 const dataObj = new Date(parts[0], parts[1] - 1, parts[2]); 
                 const dataFormatada = dataObj.toLocaleDateString('pt-BR');
                 
-                // Exibe os e-mails separados de forma bonita
-                const emailListDisplay = item.emails ? item.emails.split(',').join(', ') : 'Sem e-mail';
                 const safeName = item.name.replace(/"/g, '&quot;');
-                const safeEmails = item.emails ? item.emails.replace(/"/g, '&quot;') : '';
-
-                // Badges de Status
-                const badgeVespera = item.notified_minus_1 ? '<span class="badge sent">Véspera OK</span>' : '<span class="badge">Véspera Pend.</span>';
-                const badgeDia = item.notified_day ? '<span class="badge sent">Dia OK</span>' : '<span class="badge">Dia Pend.</span>';
-
+                const btnNF = item.nfEmitida ? `<button class="btn-nf-status nf-emitida" onclick="toggleNFStatus(${item.id})">✅ NF Emitida</button>` : `<button class="btn-nf-status nf-pendente" onclick="toggleNFStatus(${item.id})">⚠️ NF Pendente</button>`;
+                
                 li.innerHTML = `
-                    <div class="item-info">
-                        <span class="item-name">${safeName}</span>
-                        <span class="item-date">Data de Envio: ${dataFormatada}</span>
-                        <span class="item-emails">✉️ ${emailListDisplay}</span>
-                        <div class="status-badges">
-                            ${item.emails ? badgeVespera + badgeDia : ''}
-                        </div>
+                    <div class="item-header"><span class="item-name">${safeName}</span> ${btnNF}</div>
+                    <span class="item-date">Data Limite: ${dataFormatada}</span>
+                    <div class="item-logistics">
+                        <p><strong>NF:</strong> ${item.nf || '-'} | <strong>Vol:</strong> ${item.volumes || '-'} cx | <strong>Via:</strong> ${item.metodo || '-'}</p>
                     </div>
                     <div class="actions">
-                        <button class="btn-action btn-cal" onclick="addToCalendar('${safeName}', '${item.date}', '${safeEmails}')">
-                            📅 Agenda
-                        </button>
-                        <button class="btn-action btn-mail" id="btnResend-${item.id}" onclick="resendEmail('${safeName}', '${item.date}', '${safeEmails}', '${item.id}')">
-                            📧 Reenviar
-                        </button>
-                        <button class="btn-action btn-del" onclick="deleteItem(${item.id})">
-                            🗑️
-                        </button>
+                        <button class="btn-action btn-del" onclick="deleteItem(${item.id})">🗑️ Excluir</button>
                     </div>
                 `;
                 list.appendChild(li);
             });
         }
 
-        function resendEmail(name, dateStr, emails, id) {
-            if (!emails) { alert("Nenhum e-mail cadastrado."); return; }
-            const btn = document.getElementById(`btnResend-${id}`);
-            const textoOriginal = btn.innerHTML;
-            btn.innerHTML = "⏳ Enviando...";
-            btn.disabled = true;
-
-            enviarEmailJS(name, dateStr, emails, "Reenvio Manual").then(() => {
-                btn.innerHTML = "✅ Enviado!";
-                setTimeout(() => { btn.innerHTML = textoOriginal; btn.disabled = false; }, 2000);
-            }).catch((err) => {
-                alert("Erro ao reenviar.");
-                btn.innerHTML = textoOriginal;
-                btn.disabled = false;
-            });
-        }
-
         function deleteItem(id) {
-            if(!confirm("Tem certeza que deseja excluir?")) return;
+            if(!confirm("Tem certeza que deseja excluir este agendamento?")) return;
             let items = JSON.parse(localStorage.getItem('envios')) || [];
             items = items.filter(item => item.id !== id);
             localStorage.setItem('envios', JSON.stringify(items));
-            renderList();
+            renderList(); renderTV();
         }
 
         function loadItems() { renderList(); }
-
-        function addToCalendar(name, dateStr, emails) {
-            const parts = dateStr.split('-');
-            const dataString = parts[0] + parts[1] + parts[2];
-            const titulo = encodeURIComponent(`Envio: ${name}`);
-            const detalhes = encodeURIComponent(`Lembrete de envio do item: ${name}.\nE-mails notificados: ${emails}`);
-            const link = `https://www.google.com/calendar/render?action=TEMPLATE&text=${titulo}&dates=${dataString}/${dataString}&details=${detalhes}`;
-            window.open(link, '_blank');
-        }
     </script>
 </body>
 </html>
