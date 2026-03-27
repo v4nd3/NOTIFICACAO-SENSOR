@@ -13,6 +13,8 @@
             --primary: #2563eb;
             --secondary: #10b981;
             --whatsapp: #25D366;
+            --warning: #f59e0b;
+            --danger: #ef4444;
             --bg: #f3f4f6;
             --card: #ffffff;
             --text: #1f2937;
@@ -54,11 +56,18 @@
         .row-2 { display: flex; gap: 15px; }
         .row-2 > div { flex: 1; }
 
+        .form-actions { display: flex; gap: 10px; margin-top: 10px; }
         button.btn-main {
-            width: 100%; padding: 12px; background-color: var(--primary); color: white;
-            border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px;
+            flex: 1; padding: 12px; background-color: var(--primary); color: white;
+            border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; 
         }
         button.btn-main:hover { background-color: #1d4ed8; }
+        
+        button.btn-cancel {
+            display: none; padding: 12px; background-color: #fef2f2; color: #dc2626; border: 1px solid #f87171;
+            border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; flex: 0.5;
+        }
+        
         button.btn-success { background-color: var(--secondary); }
         button.btn-success:hover { background-color: #059669; }
 
@@ -77,7 +86,7 @@
         }
         .contact-item { display: flex; align-items: center; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #eee; }
         .contact-item:last-child { border-bottom: none; }
-        .contact-item label { margin: 0; font-weight: 400; cursor: pointer; display: flex; align-items: center; gap: 8px;}
+        .contact-item label { margin: 0; font-weight: 400; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 0.9rem;}
         .btn-del-contact { background: none; border: none; color: #dc2626; cursor: pointer; padding: 5px;}
         
         .add-contact-row { display: flex; gap: 10px; margin-bottom: 15px; }
@@ -91,13 +100,16 @@
             display: flex; flex-direction: column; gap: 10px; position: relative; border-left: 5px solid var(--primary);
         }
         
-        /* Destaque para pedidos de HOJE */
-        li.is-today { border-left: 5px solid #ef4444; background-color: #fef2f2; }
-        .badge-today { background: #ef4444; color: white; padding: 3px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; animation: pulse 2s infinite; display: inline-block; margin-bottom: 5px; }
+        /* Destaque para pedidos de HOJE na aba Gestão */
+        li.is-today { border-left: 5px solid var(--danger); background-color: #fef2f2; }
+        .badge-today { background: var(--danger); color: white; padding: 3px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; animation: pulse 2s infinite; display: inline-block; margin-bottom: 5px; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
 
+        /* Estilo para pedidos Entregues na aba Gestão */
+        li.is-entregue { opacity: 0.65; border-left: 5px solid var(--secondary); background-color: #f0fdf4; }
+
         .item-header { display: flex; justify-content: space-between; align-items: flex-start; }
-        .item-name { font-weight: bold; font-size: 1.1rem; color: #1e293b; }
+        .item-name { font-weight: bold; font-size: 1.1rem; color: #1e293b; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;}
         
         .btn-nf-status { padding: 5px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; border: none; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
         .nf-pendente { background: #fee2e2; color: #991b1b; border: 1px solid #f87171; }
@@ -106,14 +118,15 @@
         .item-date { color: #dc2626; font-weight: 600; font-size: 0.95rem; }
         .item-logistics { background: #f8fafc; border: 1px solid #e2e8f0; padding: 10px; border-radius: 8px; font-size: 0.85rem; color: #475569; }
         .item-logistics p { margin: 4px 0; }
-        .item-emails { color: #64748b; font-size: 0.8rem; word-break: break-all; }
         
         .actions { display: flex; gap: 8px; margin-top: 5px; padding-top: 10px; border-top: 1px solid #eee; flex-wrap: wrap;}
         .btn-action { flex: 1; padding: 8px; border: none; border-radius: 6px; cursor: pointer; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; gap: 5px; font-weight: 600; min-width: 80px;}
-        .btn-cal { background: #eff6ff; color: var(--primary); }
-        .btn-mail { background: #ecfdf5; color: var(--secondary); }
-        .btn-zap { background: #dcfce7; color: #166534; }
+        
+        .btn-edit-item { background: #e0f2fe; color: #0284c7; }
+        .btn-zap { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0;}
         .btn-del { background: #fef2f2; color: #dc2626; max-width: 50px;}
+        .btn-entregue { background: #fef3c7; color: #d97706; border: 1px solid #fde68a;}
+        .btn-entregue-ok { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0;}
 
         /* --- ABA PAINEL TV --- */
         #viewTV { display: none; width: 100%; }
@@ -125,6 +138,16 @@
         .tv-table th, .tv-table td { padding: 18px 20px; text-align: left; border-bottom: 1px solid #e2e8f0; font-size: 1.3rem; }
         .tv-table th { background: #1e293b; color: white; font-weight: bold; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 1px;}
         .tv-table tr:nth-child(even) { background-color: #f8fafc; }
+        
+        /* Modificadores TV */
+        .tv-table tr.tv-row-today { background-color: #fef2f2 !important; }
+        .tv-table tr.tv-row-today td:first-child { border-left: 6px solid var(--danger); }
+        .tv-badge-hoje { background: var(--danger); color: white; padding: 4px 10px; border-radius: 12px; font-size: 0.85rem; font-weight: bold; margin-left: 10px; animation: pulse 2s infinite; display: inline-block;}
+        
+        .tv-table tr.tv-row-entregue { background-color: #f0fdf4 !important; opacity: 0.7; }
+        .tv-table tr.tv-row-entregue td:first-child { border-left: 6px solid var(--secondary); }
+        .tv-badge-entregue { background: var(--secondary); color: white; padding: 4px 10px; border-radius: 12px; font-size: 0.85rem; font-weight: bold; margin-left: 10px; display: inline-block;}
+
         .tv-status-ok { background: #d1fae5; color: #065f46; padding: 5px 12px; border-radius: 8px; font-weight: bold; font-size: 1.1rem; display: inline-block;}
         .tv-status-pend { background: #fee2e2; color: #991b1b; padding: 5px 12px; border-radius: 8px; font-weight: bold; font-size: 1.1rem; display: inline-block;}
         .tv-date-col { font-weight: bold; color: var(--primary); }
@@ -153,7 +176,7 @@
         </div>
         
         <div id="viewGestao">
-            <div class="box-panel">
+            <div class="box-panel" id="formContainer">
                 <label for="itemName">Identificação do Pedido</label>
                 <input type="text" id="itemName" placeholder="Ex: Pedido #1234 - Cliente X">
                 
@@ -193,16 +216,28 @@
                 <label for="itemObs">Observações Internas</label>
                 <textarea id="itemObs" rows="2" placeholder="Ex: Material frágil."></textarea>
 
-                <label>Setores a Notificar (E-mail)</label>
-                <div class="contact-box" id="contactCheckboxList"></div>
+                <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
 
-                <label>Cadastrar Novo E-mail na Agenda:</label>
+                <label><i class="fas fa-envelope"></i> Setores a Notificar (E-mail)</label>
+                <div class="contact-box" id="contactCheckboxList"></div>
                 <div class="add-contact-row">
                     <input type="email" id="newContactEmail" placeholder="novo@email.com">
-                    <button type="button" class="btn-add-contact" onclick="addNewContact()">Salvar</button>
+                    <button type="button" class="btn-add-contact" onclick="addNewContact('email')">Salvar E-mail</button>
                 </div>
 
-                <button id="addBtn" class="btn-main" onclick="addItem()">Agendar e Notificar</button>
+                <br>
+                
+                <label><i class="fab fa-whatsapp" style="color: var(--whatsapp);"></i> Setores a Notificar (WhatsApp)</label>
+                <div class="contact-box" id="whatsappCheckboxList"></div>
+                <div class="add-contact-row">
+                    <input type="text" id="newContactWhatsapp" placeholder="Ex: 5511999999999">
+                    <button type="button" class="btn-add-contact" onclick="addNewContact('zap')" style="background-color: var(--whatsapp);">Salvar Whats</button>
+                </div>
+
+                <div class="form-actions">
+                    <button id="addBtn" class="btn-main" onclick="saveItem()">Agendar e Notificar</button>
+                    <button id="cancelEditBtn" class="btn-cancel" onclick="cancelEdit()">Cancelar</button>
+                </div>
             </div>
 
             <ul id="listaEnvios"></ul>
@@ -227,13 +262,6 @@
 
         <div id="viewConfig">
             <div class="box-panel">
-                <h2><i class="fab fa-whatsapp" style="color: var(--whatsapp);"></i> Integração WhatsApp</h2>
-                <p class="config-info">Digite o número padrão (ex: do grupo da expedição) que receberá os alertas manuais de WhatsApp. Inclua o código do país (55) e DDD.</p>
-                <label for="cfgZap">Número do WhatsApp (Apenas números)</label>
-                <input type="text" id="cfgZap" placeholder="Ex: 5511999999999">
-
-                <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
-
                 <h2><i class="fas fa-envelope" style="color: var(--primary);"></i> Chaves do EmailJS</h2>
                 <p class="config-info">Suas credenciais para disparo de e-mails automáticos.</p>
                 
@@ -253,11 +281,12 @@
     </div>
 
     <script>
-        // Variáveis globais de configuração
-        let CFG_ZAP = '';
+        // Variáveis globais
         let CFG_EMAIL_PUB = '6hQGh6kwO9BxNNTP8';
         let CFG_EMAIL_SRV = 'service_hro0xpr';
         let CFG_EMAIL_TPL = 'template_j8aodrq';
+        
+        let editingId = null;
 
         document.addEventListener('DOMContentLoaded', () => {
             loadConfig();
@@ -270,36 +299,25 @@
         });
 
         // ==========================================
-        // CONFIGURAÇÕES E INICIALIZAÇÃO
+        // CONFIGURAÇÕES E ABAS
         // ==========================================
         function loadConfig() {
-            CFG_ZAP = localStorage.getItem('cfgZap') || '';
             CFG_EMAIL_PUB = localStorage.getItem('cfgEmailPubKey') || '6hQGh6kwO9BxNNTP8';
             CFG_EMAIL_SRV = localStorage.getItem('cfgEmailServiceId') || 'service_hro0xpr';
             CFG_EMAIL_TPL = localStorage.getItem('cfgEmailTemplateId') || 'template_j8aodrq';
-
-            document.getElementById('cfgZap').value = CFG_ZAP;
             document.getElementById('cfgEmailPubKey').value = CFG_EMAIL_PUB;
             document.getElementById('cfgEmailServiceId').value = CFG_EMAIL_SRV;
             document.getElementById('cfgEmailTemplateId').value = CFG_EMAIL_TPL;
-
-            // Inicializa o EmailJS com a chave salva
             emailjs.init(CFG_EMAIL_PUB);
         }
 
         function saveConfig() {
-            localStorage.setItem('cfgZap', document.getElementById('cfgZap').value.replace(/\D/g, '')); // Salva só números
             localStorage.setItem('cfgEmailPubKey', document.getElementById('cfgEmailPubKey').value.trim());
             localStorage.setItem('cfgEmailServiceId', document.getElementById('cfgEmailServiceId').value.trim());
             localStorage.setItem('cfgEmailTemplateId', document.getElementById('cfgEmailTemplateId').value.trim());
-            
-            alert('✅ Configurações salvas com sucesso!');
-            loadConfig(); // Recarrega
+            alert('✅ Configurações salvas!'); loadConfig();
         }
 
-        // ==========================================
-        // ABAS
-        // ==========================================
         function switchTab(tabName) {
             const container = document.getElementById('mainContainer');
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -323,7 +341,7 @@
         }
 
         // ==========================================
-        // TV LOGIC
+        // LÓGICA DO PAINEL TV E DATA
         // ==========================================
         function getWeekString(dateObj) {
             const d = new Date(Date.UTC(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate()));
@@ -342,22 +360,52 @@
             if (!selectedWeek) return;
 
             const items = JSON.parse(localStorage.getItem('envios')) || [];
+            const hojeLocal = new Date(); hojeLocal.setHours(0,0,0,0);
+
             const tvItems = items.filter(item => {
                 const parts = item.date.split('-'); const itemDateObj = new Date(parts[0], parts[1] - 1, parts[2]);
-                return getWeekString(itemDateObj) === selectedWeek;
+                itemDateObj.setHours(0,0,0,0);
+                
+                if(getWeekString(itemDateObj) !== selectedWeek) return false;
+
+                // Regra de sumir após 3 dias da entrega
+                if (item.entregue && item.dataEntrega) {
+                    const dataEnt = new Date(item.dataEntrega);
+                    dataEnt.setHours(0,0,0,0);
+                    const diffDias = Math.floor((hojeLocal.getTime() - dataEnt.getTime()) / (1000 * 60 * 60 * 24));
+                    if (diffDias > 3) return false; // Se passou de 3 dias, ESCONDE da TV
+                }
+
+                return true;
             });
 
-            if (tvItems.length === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #64748b; padding: 30px;">Nenhum envio agendado para esta semana.</td></tr>'; return; }
+            if (tvItems.length === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #64748b; padding: 30px;">Nenhum envio pendente para esta semana.</td></tr>'; return; }
 
             tvItems.forEach(item => {
                 const parts = item.date.split('-'); const itemDateObj = new Date(parts[0], parts[1] - 1, parts[2]);
+                itemDateObj.setHours(0,0,0,0);
                 const diaSemana = itemDateObj.toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: '2-digit' }).replace('.', '');
+                
+                const isToday = (itemDateObj.getTime() === hojeLocal.getTime());
                 const statusNF = item.nfEmitida ? `<span class="tv-status-ok">✅ Emitida</span>` : `<span class="tv-status-pend">⚠️ Pendente</span>`;
                 
+                // Lógica de Destaques
+                let rowClass = "";
+                let badgeHtml = "";
+                if (item.entregue) {
+                    rowClass = "tv-row-entregue";
+                    badgeHtml = `<span class="tv-badge-entregue">✅ Entregue</span>`;
+                } else if (isToday) {
+                    rowClass = "tv-row-today";
+                    badgeHtml = `<span class="tv-badge-hoje">🚨 HOJE</span>`;
+                }
+                
                 const tr = document.createElement('tr');
+                if(rowClass) tr.className = rowClass;
+
                 tr.innerHTML = `
                     <td class="tv-date-col">${diaSemana.toUpperCase()}</td>
-                    <td style="font-weight: bold; color: #1e293b;">${item.name}</td>
+                    <td style="font-weight: bold; color: #1e293b;">${item.name} ${badgeHtml}</td>
                     <td>${statusNF} <div style="font-size: 0.8rem; color:#64748b; margin-top:4px;">Nº ${item.nf || '-'}</div></td>
                     <td>${item.volumes || '-'} cx</td>
                     <td>${item.metodo || '-'}</td>
@@ -368,64 +416,114 @@
         }
 
         // ==========================================
-        // AGENDA
+        // AGENDAS (EMAIL E WHATSAPP)
         // ==========================================
-        function addNewContact() {
-            const emailInput = document.getElementById('newContactEmail'); const email = emailInput.value.trim();
-            if(!email || !email.includes('@')) { alert("Digite um e-mail válido."); return; }
-            let contacts = JSON.parse(localStorage.getItem('agendaEmails')) || [];
-            if(!contacts.includes(email)) { contacts.push(email); localStorage.setItem('agendaEmails', JSON.stringify(contacts)); emailInput.value = ''; loadContacts(); } else { alert("E-mail já cadastrado."); }
+        function addNewContact(type) {
+            if(type === 'email') {
+                const val = document.getElementById('newContactEmail').value.trim();
+                if(!val || !val.includes('@')) { alert("Digite um e-mail válido."); return; }
+                let contacts = JSON.parse(localStorage.getItem('agendaEmails')) || [];
+                if(!contacts.includes(val)) { contacts.push(val); localStorage.setItem('agendaEmails', JSON.stringify(contacts)); document.getElementById('newContactEmail').value = ''; loadContacts(); } else { alert("E-mail já cadastrado."); }
+            } else {
+                const val = document.getElementById('newContactWhatsapp').value.trim().replace(/\D/g, '');
+                if(!val || val.length < 10) { alert("Digite um número válido com DDD."); return; }
+                let contacts = JSON.parse(localStorage.getItem('agendaWhatsapps')) || [];
+                if(!contacts.includes(val)) { contacts.push(val); localStorage.setItem('agendaWhatsapps', JSON.stringify(contacts)); document.getElementById('newContactWhatsapp').value = ''; loadContacts(); } else { alert("Número já cadastrado."); }
+            }
         }
-        function deleteContact(emailToDelete) {
-            let contacts = JSON.parse(localStorage.getItem('agendaEmails')) || [];
-            contacts = contacts.filter(email => email !== emailToDelete); localStorage.setItem('agendaEmails', JSON.stringify(contacts)); loadContacts();
+        function deleteContact(type, valueToDelete) {
+            if(type === 'email') {
+                let contacts = JSON.parse(localStorage.getItem('agendaEmails')) || [];
+                contacts = contacts.filter(v => v !== valueToDelete); localStorage.setItem('agendaEmails', JSON.stringify(contacts));
+            } else {
+                let contacts = JSON.parse(localStorage.getItem('agendaWhatsapps')) || [];
+                contacts = contacts.filter(v => v !== valueToDelete); localStorage.setItem('agendaWhatsapps', JSON.stringify(contacts));
+            }
+            loadContacts();
         }
         function loadContacts() {
-            const contacts = JSON.parse(localStorage.getItem('agendaEmails')) || []; const box = document.getElementById('contactCheckboxList'); box.innerHTML = '';
-            if(contacts.length === 0) { box.innerHTML = '<div style="color:#999; font-size:0.8rem; text-align:center;">Agenda vazia.</div>'; return; }
-            contacts.forEach((email) => {
+            const emails = JSON.parse(localStorage.getItem('agendaEmails')) || []; const boxMail = document.getElementById('contactCheckboxList'); boxMail.innerHTML = '';
+            if(emails.length === 0) boxMail.innerHTML = '<div style="color:#999; font-size:0.8rem; text-align:center;">Agenda vazia.</div>';
+            else emails.forEach(email => {
                 const div = document.createElement('div'); div.className = 'contact-item';
-                div.innerHTML = `<label><input type="checkbox" class="email-checkbox" value="${email}"> ${email}</label><button type="button" class="btn-del-contact" onclick="deleteContact('${email}')"><i class="fas fa-trash"></i></button>`;
-                box.appendChild(div);
+                div.innerHTML = `<label><input type="checkbox" class="email-checkbox" value="${email}"> ${email}</label><button type="button" class="btn-del-contact" onclick="deleteContact('email', '${email}')"><i class="fas fa-trash"></i></button>`;
+                boxMail.appendChild(div);
+            });
+
+            const zaps = JSON.parse(localStorage.getItem('agendaWhatsapps')) || []; const boxZap = document.getElementById('whatsappCheckboxList'); boxZap.innerHTML = '';
+            if(zaps.length === 0) boxZap.innerHTML = '<div style="color:#999; font-size:0.8rem; text-align:center;">Nenhum número salvo.</div>';
+            else zaps.forEach(zap => {
+                const div = document.createElement('div'); div.className = 'contact-item';
+                div.innerHTML = `<label><input type="checkbox" class="whatsapp-checkbox" value="${zap}"> ${zap}</label><button type="button" class="btn-del-contact" onclick="deleteContact('zap', '${zap}')"><i class="fas fa-trash"></i></button>`;
+                boxZap.appendChild(div);
             });
         }
 
         // ==========================================
-        // CRUD & ALERTS
+        // EDITAR E SALVAR
         // ==========================================
-        function addItem() {
-            const name = document.getElementById('itemName').value; const date = document.getElementById('itemDate').value;
-            if (!name || !date) { alert("Preencha identificação e data."); return; }
-            
-            const btn = document.getElementById('addBtn');
-            const checkboxes = document.querySelectorAll('.email-checkbox:checked');
-            const selectedEmails = Array.from(checkboxes).map(cb => cb.value).join(',');
-
-            const envio = { 
-                id: Date.now(), name: name, date: date, 
-                nf: document.getElementById('itemNF').value || 'Pendente', 
-                nfEmitida: document.getElementById('itemNFEmitida').checked,
-                volumes: document.getElementById('itemVolumes').value || '1', 
-                metodo: document.getElementById('itemMetodo').value, 
-                obs: document.getElementById('itemObs').value, 
-                emails: selectedEmails, notified_minus_1: false, notified_day: false 
-            };
-            
+        function editItem(id) {
             let items = JSON.parse(localStorage.getItem('envios')) || [];
-            items.push(envio); items.sort((a, b) => new Date(a.date) - new Date(b.date));
-            localStorage.setItem('envios', JSON.stringify(items));
+            let item = items.find(i => i.id === id);
+            if(!item) return;
 
+            editingId = id;
+            document.getElementById('itemName').value = item.name; document.getElementById('itemDate').value = item.date;
+            document.getElementById('itemNF').value = item.nf !== 'Pendente' ? item.nf : ''; document.getElementById('itemNFEmitida').checked = item.nfEmitida;
+            document.getElementById('itemVolumes').value = item.volumes !== '-' ? item.volumes : ''; document.getElementById('itemMetodo').value = item.metodo || 'Transportadora';
+            document.getElementById('itemObs').value = item.obs || '';
+
+            document.querySelectorAll('.email-checkbox').forEach(cb => { cb.checked = item.emails && item.emails.includes(cb.value); });
+            document.querySelectorAll('.whatsapp-checkbox').forEach(cb => { cb.checked = item.whatsapps && item.whatsapps.includes(cb.value); });
+
+            const btn = document.getElementById('addBtn'); btn.innerText = "Salvar Alterações"; btn.style.backgroundColor = "var(--warning)";
+            document.getElementById('cancelEditBtn').style.display = "block";
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function cancelEdit() {
+            editingId = null;
             document.getElementById('itemName').value = ''; document.getElementById('itemDate').value = '';
             document.getElementById('itemNF').value = ''; document.getElementById('itemVolumes').value = '';
             document.getElementById('itemObs').value = ''; document.getElementById('itemNFEmitida').checked = false;
-            document.querySelectorAll('.email-checkbox').forEach(cb => cb.checked = false);
+            document.querySelectorAll('.email-checkbox').forEach(cb => cb.checked = false); document.querySelectorAll('.whatsapp-checkbox').forEach(cb => cb.checked = false);
             
-            renderList(); renderTV();
+            const btn = document.getElementById('addBtn'); btn.innerText = "Agendar e Notificar"; btn.style.backgroundColor = "var(--primary)";
+            document.getElementById('cancelEditBtn').style.display = "none";
+        }
 
-            if (selectedEmails) {
-                btn.disabled = true; btn.innerText = "Enviando...";
-                enviarEmailJS(envio, "Nova Expedição Agendada").then(() => { btn.disabled = false; btn.innerText = "Agendar e Notificar"; alert("✅ Agendado e notificado!"); }).catch(() => { btn.disabled = false; btn.innerText = "Agendar e Notificar"; alert("❌ Erro no e-mail, mas salvo."); });
-            } else { alert("✅ Salvo sem e-mail."); }
+        function saveItem() {
+            const name = document.getElementById('itemName').value; const date = document.getElementById('itemDate').value;
+            if (!name || !date) { alert("Preencha identificação e data."); return; }
+            
+            const selectedEmails = Array.from(document.querySelectorAll('.email-checkbox:checked')).map(cb => cb.value).join(',');
+            const selectedWhatsapps = Array.from(document.querySelectorAll('.whatsapp-checkbox:checked')).map(cb => cb.value).join(',');
+
+            const envio = { 
+                id: editingId ? editingId : Date.now(), name: name, date: date, 
+                nf: document.getElementById('itemNF').value || 'Pendente', nfEmitida: document.getElementById('itemNFEmitida').checked,
+                volumes: document.getElementById('itemVolumes').value || '1', metodo: document.getElementById('itemMetodo').value, 
+                obs: document.getElementById('itemObs').value, emails: selectedEmails, whatsapps: selectedWhatsapps,
+                notified_minus_1: false, notified_day: false, entregue: false, dataEntrega: null
+            };
+            
+            let items = JSON.parse(localStorage.getItem('envios')) || [];
+
+            if (editingId) {
+                let index = items.findIndex(i => i.id === editingId);
+                if (index > -1) {
+                    // Mantém controles ocultos e de entrega caso esteja só editando outras coisas
+                    envio.notified_minus_1 = items[index].notified_minus_1; envio.notified_day = items[index].notified_day;
+                    envio.entregue = items[index].entregue || false; envio.dataEntrega = items[index].dataEntrega || null;
+                    items[index] = envio; 
+                }
+                items.sort((a, b) => new Date(a.date) - new Date(b.date)); localStorage.setItem('envios', JSON.stringify(items));
+                alert("✅ Alterações salvas com sucesso!"); cancelEdit(); renderList(); renderTV();
+            } else {
+                items.push(envio); items.sort((a, b) => new Date(a.date) - new Date(b.date)); localStorage.setItem('envios', JSON.stringify(items));
+                cancelEdit(); renderList(); renderTV();
+                alert("✅ Pedido agendado e salvo!");
+            }
         }
 
         function toggleNFStatus(id) {
@@ -434,12 +532,33 @@
             if (index > -1) { items[index].nfEmitida = !items[index].nfEmitida; localStorage.setItem('envios', JSON.stringify(items)); renderList(); renderTV(); }
         }
 
+        function toggleEntregue(id) {
+            let items = JSON.parse(localStorage.getItem('envios')) || [];
+            let index = items.findIndex(item => item.id === id);
+            if (index > -1) { 
+                items[index].entregue = !items[index].entregue; 
+                
+                // Grava a data do momento em que foi marcado como entregue
+                if(items[index].entregue) {
+                    items[index].dataEntrega = new Date().toISOString();
+                } else {
+                    items[index].dataEntrega = null;
+                }
+                
+                localStorage.setItem('envios', JSON.stringify(items)); 
+                renderList(); renderTV(); 
+            }
+        }
+
+        // ==========================================
+        // NOTIFICAÇÕES
+        // ==========================================
         async function checkAutomatedAlerts() {
             let items = JSON.parse(localStorage.getItem('envios')) || [];
             let updated = false; const hoje = new Date(); hoje.setHours(0,0,0,0);
 
             for (let i = 0; i < items.length; i++) {
-                let item = items[i]; if (!item.emails) continue;
+                let item = items[i]; if (!item.emails || item.entregue) continue; // Pula se já entregou
                 const parts = item.date.split('-'); const dataItem = new Date(parts[0], parts[1] - 1, parts[2]); dataItem.setHours(0,0,0,0);
                 const diffDias = Math.ceil((dataItem - hoje) / (1000 * 60 * 60 * 24));
 
@@ -464,23 +583,13 @@
             return emailjs.send(CFG_EMAIL_SRV, CFG_EMAIL_TPL, { to_email: itemObj.emails, item_name: `${nomeEnriquecido} (${tipoAviso})`, item_date: dataFormatada });
         }
 
-        // ==========================================
-        // DISPARO WHATSAPP MANUAL
-        // ==========================================
-        function sendWhatsApp(id) {
+        function sendWhatsApp(id, telefone) {
             let items = JSON.parse(localStorage.getItem('envios')) || [];
             let item = items.find(i => i.id === id);
             if(!item) return;
 
-            const telefone = CFG_ZAP;
-            if(!telefone) {
-                alert("Nenhum número configurado! Vá na aba 'Configurações' e adicione o WhatsApp de destino.");
-                switchTab('config');
-                return;
-            }
-
             const statusNF = item.nfEmitida ? "✅ Emitida" : "⚠️ Pendente";
-            let msg = `🚨 *LEMBRETE DE EXPEDIÇÃO PARA HOJE!* 🚨\n\n`;
+            let msg = `🚨 *LEMBRETE DE EXPEDIÇÃO!* 🚨\n\n`;
             msg += `📦 *Pedido:* ${item.name}\n`;
             msg += `📄 *NF:* ${item.nf} (${statusNF})\n`;
             msg += `📦 *Volumes:* ${item.volumes || '-'} cx\n`;
@@ -492,7 +601,7 @@
         }
 
         // ==========================================
-        // RENDERIZAÇÃO DA LISTA GESTÃO
+        // RENDERIZAÇÃO GESTÃO
         // ==========================================
         function renderList() {
             const list = document.getElementById('listaEnvios'); list.innerHTML = '';
@@ -503,21 +612,35 @@
                 const li = document.createElement('li');
                 const parts = item.date.split('-'); const dataObj = new Date(parts[0], parts[1] - 1, parts[2]); dataObj.setHours(0,0,0,0);
                 const dataFormatada = dataObj.toLocaleDateString('pt-BR');
-                const isToday = (dataObj.getTime() === hoje.getTime()); // Verifica se é hoje
+                const isToday = (dataObj.getTime() === hoje.getTime());
                 
-                if(isToday) li.classList.add('is-today');
-
+                if(item.entregue) li.classList.add('is-entregue');
+                else if(isToday) li.classList.add('is-today');
+                
                 const btnNF = item.nfEmitida ? `<button class="btn-nf-status nf-emitida" onclick="toggleNFStatus(${item.id})">✅ NF Emitida</button>` : `<button class="btn-nf-status nf-pendente" onclick="toggleNFStatus(${item.id})">⚠️ NF Pendente</button>`;
                 
+                // Botão de Entregue
+                const btnEntregue = item.entregue 
+                    ? `<button class="btn-action btn-entregue-ok" onclick="toggleEntregue(${item.id})">✅ Entregue</button>`
+                    : `<button class="btn-action btn-entregue" onclick="toggleEntregue(${item.id})">🚚 Marcar Entregue</button>`;
+
+                let zapButtonsHtml = '';
+                if(item.whatsapps && !item.entregue) {
+                    const zaps = item.whatsapps.split(',');
+                    zaps.forEach(zap => { zapButtonsHtml += `<button class="btn-action btn-zap" onclick="sendWhatsApp(${item.id}, '${zap}')" title="Enviar Whats para ${zap}"><i class="fab fa-whatsapp"></i> ${zap.slice(-4)}</button>`; });
+                }
+
                 li.innerHTML = `
-                    ${isToday ? `<div class="badge-today">🚨 DESPACHAR HOJE</div>` : ''}
+                    ${isToday && !item.entregue ? `<div class="badge-today">🚨 DESPACHAR HOJE</div>` : ''}
                     <div class="item-header"><span class="item-name">${item.name}</span> ${btnNF}</div>
                     <span class="item-date">Data Limite: ${dataFormatada}</span>
                     <div class="item-logistics">
                         <p><strong>NF:</strong> ${item.nf || '-'} | <strong>Vol:</strong> ${item.volumes || '-'} cx | <strong>Via:</strong> ${item.metodo || '-'}</p>
                     </div>
                     <div class="actions">
-                        <button class="btn-action btn-zap" onclick="sendWhatsApp(${item.id})"><i class="fab fa-whatsapp"></i> Notificar</button>
+                        ${btnEntregue}
+                        <button class="btn-action btn-edit-item" onclick="editItem(${item.id})">✏️ Editar</button>
+                        ${zapButtonsHtml}
                         <button class="btn-action btn-del" onclick="deleteItem(${item.id})">🗑️</button>
                     </div>
                 `;
@@ -529,6 +652,7 @@
             if(!confirm("Deseja excluir este agendamento?")) return;
             let items = JSON.parse(localStorage.getItem('envios')) || [];
             items = items.filter(item => item.id !== id); localStorage.setItem('envios', JSON.stringify(items));
+            if(editingId === id) cancelEdit(); 
             renderList(); renderTV();
         }
 
